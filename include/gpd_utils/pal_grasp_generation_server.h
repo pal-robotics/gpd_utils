@@ -66,10 +66,6 @@ public:
   */
   ~PalGraspGenerationServer()
   {
-    delete cloud_camera_;
-    delete importance_sampling_;
-    delete grasp_detector_;
-    delete rviz_plotter_;
   }
 
   /**
@@ -139,8 +135,9 @@ private:
 
   Eigen::Vector3d view_point_;  ///< (input) view point of the camera onto the point cloud
 
-  CloudCamera* cloud_camera_;  ///< stores point cloud with (optional) camera information
-                               /// and surface normals
+  std::unique_ptr<CloudCamera> cloud_camera_;  ///< stores point cloud with (optional)
+                                               /// camera information
+  /// and surface normals
   std_msgs::Header cloud_camera_header_;  ///< stores header of the point cloud
 
   int size_left_cloud_;  ///< (input) size of the left point cloud (when using two point
@@ -155,10 +152,12 @@ private:
   bool use_rviz_;                  ///< if rviz is used for visualization instead of PCL
   std::vector<double> workspace_;  ///< workspace limits
 
-  GraspDetector* grasp_detector_;                      ///< used to run the GPD algorithm
-  SequentialImportanceSampling* importance_sampling_;  ///< sequential importance sampling
-                                                       /// variation of GPD algorithm
-  GraspPlotter* rviz_plotter_;  ///< used to plot detected grasps in rviz
+  std::unique_ptr<GraspDetector> grasp_detector_;  ///< used to run the GPD algorithm
+  std::unique_ptr<SequentialImportanceSampling> importance_sampling_;  ///< sequential
+                                                                       /// importance
+  /// sampling
+  /// variation of GPD algorithm
+  std::unique_ptr<GraspPlotter> rviz_plotter_;  ///< used to plot detected grasps in rviz
   ros::NodeHandle nh_;
   ros::Publisher grasp_pose_pub_;
 

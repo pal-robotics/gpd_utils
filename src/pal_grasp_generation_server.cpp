@@ -1,6 +1,7 @@
 #include <gpd_utils/pal_grasp_generation_server.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl_ros/transforms.h>
+
 using namespace pal;
 
 PalGraspGenerationServer::PalGraspGenerationServer(ros::NodeHandle& node)
@@ -14,7 +15,7 @@ PalGraspGenerationServer::PalGraspGenerationServer(ros::NodeHandle& node)
         nh_, "/generate_grasp_candidates",
         boost::bind(&PalGraspGenerationServer::generateCandidates, this, _1), false)
 {
-  cloud_camera_ = NULL;
+  cloud_camera_.reset();
 
   // set camera viewpoint to default origin
   std::vector<double> camera_position;
@@ -26,9 +27,9 @@ PalGraspGenerationServer::PalGraspGenerationServer(ros::NodeHandle& node)
 
   if (use_importance_sampling_)
   {
-    importance_sampling_ = new SequentialImportanceSampling(nh_);
+    importance_sampling_.reset(new SequentialImportanceSampling(nh_));
   }
-  grasp_detector_ = new GraspDetector(nh_);
+  grasp_detector_.reset(new GraspDetector(nh_));
 
   // Read input cloud and sample ROS topics parameters.
   std::string cloud_topic;
@@ -40,7 +41,7 @@ PalGraspGenerationServer::PalGraspGenerationServer(ros::NodeHandle& node)
 
   if (!rviz_topic.empty())
   {
-    rviz_plotter_ = new GraspPlotter(nh_, grasp_detector_->getHandSearchParameters());
+    rviz_plotter_.reset(new GraspPlotter(nh_, grasp_detector_->getHandSearchParameters()));
     use_rviz_ = true;
   }
   else
@@ -151,14 +152,13 @@ void PalGraspGenerationServer::generateCandidates(const gpd_utils::GraspCandidat
 {
   if ((goal->pointcloud.width * goal->pointcloud.height) != 0)
   {
-    delete cloud_camera_;
-    cloud_camera_ = NULL;
+    cloud_camera_.reset();
     Eigen::Matrix3Xd view_points(3, 1);
     view_points.col(0) = view_point_;
 
     PointCloudRGBA::Ptr cloud(new PointCloudRGBA);
     pcl::fromROSMsg(goal->pointcloud, *cloud);
-    cloud_camera_ = new CloudCamera(cloud, 0, view_points);
+    cloud_camera_.reset(new CloudCamera(cloud, 0, view_points));
     cloud_camera_header_ = goal->pointcloud.header;
     ROS_INFO_STREAM("Received cloud with " << cloud_camera_->getCloudProcessed()->size()
                                            << " points.");
@@ -214,10 +214,6 @@ void PalGraspGenerationServer::samples_callback(const gpd::SamplesMsg& msg)
 
 void PalGraspGenerationServer::initCloudCamera(const gpd::CloudSources& msg)
 {
-  // clean up
-  delete cloud_camera_;
-  cloud_camera_ = NULL;
-
   // Set view points.
   Eigen::Matrix3Xd view_points(3, msg.view_points.size());
   for (int i = 0; i < msg.view_points.size(); i++)
@@ -239,7 +235,7 @@ void PalGraspGenerationServer::initCloudCamera(const gpd::CloudSources& msg)
       camera_source(msg.camera_source[i].data, i) = 1;
     }
 
-    cloud_camera_ = new CloudCamera(cloud, camera_source, view_points);
+    cloud_camera_.reset(new CloudCamera(cloud, camera_source, view_points));
   }
   else
   {
@@ -253,7 +249,7 @@ void PalGraspGenerationServer::initCloudCamera(const gpd::CloudSources& msg)
       camera_source(msg.camera_source[i].data, i) = 1;
     }
 
-    cloud_camera_ = new CloudCamera(cloud, camera_source, view_points);
+    cloud_camera_.reset(new CloudCamera(cloud, camera_source, view_points));
     std::cout << "view_points:\n" << view_points << "\n";
   }
 }

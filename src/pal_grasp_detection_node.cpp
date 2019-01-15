@@ -18,7 +18,7 @@ PalGraspDetectionNode::PalGraspDetectionNode(ros::NodeHandle& node, std::string 
   , frame_(target_frame)
   , nh_(node)
 {
-  cloud_camera_ = NULL;
+  cloud_camera_.reset();
 
   // set camera viewpoint to default origin
   std::vector<double> camera_position;
@@ -30,9 +30,9 @@ PalGraspDetectionNode::PalGraspDetectionNode(ros::NodeHandle& node, std::string 
 
   if (use_importance_sampling_)
   {
-    importance_sampling_ = new SequentialImportanceSampling(node);
+    importance_sampling_.reset(new SequentialImportanceSampling(node));
   }
-  grasp_detector_ = new GraspDetector(node);
+  grasp_detector_.reset(new GraspDetector(node));
 
   // Read input cloud and sample ROS topics parameters.
   int cloud_type;
@@ -47,7 +47,7 @@ PalGraspDetectionNode::PalGraspDetectionNode(ros::NodeHandle& node, std::string 
   if (!rviz_topic.empty())
   {
     grasps_rviz_pub_ = node.advertise<visualization_msgs::MarkerArray>(rviz_topic, 1);
-    rviz_plotter_ = new GraspPlotter(node, grasp_detector_->getHandSearchParameters());
+    rviz_plotter_.reset(new GraspPlotter(node, grasp_detector_->getHandSearchParameters()));
     use_rviz_ = true;
   }
   else
@@ -213,8 +213,7 @@ void PalGraspDetectionNode::cloud_callback(const sensor_msgs::PointCloud2ConstPt
 {
   if (!has_cloud_)
   {
-    delete cloud_camera_;
-    cloud_camera_ = NULL;
+    cloud_camera_.reset();
 
     Eigen::Matrix3Xd view_points(3, 1);
     view_points.col(0) = view_point_;
@@ -224,7 +223,7 @@ void PalGraspDetectionNode::cloud_callback(const sensor_msgs::PointCloud2ConstPt
     {
       PointCloudPointNormal::Ptr cloud(new PointCloudPointNormal);
       pcl::fromROSMsg(*msg, *cloud);
-      cloud_camera_ = new CloudCamera(cloud, 0, view_points);
+      cloud_camera_.reset(new CloudCamera(cloud, 0, view_points));
       cloud_camera_header_ = msg->header;
       ROS_INFO_STREAM("Received cloud with " << cloud_camera_->getCloudProcessed()->size()
                                              << " points and normals.");
@@ -235,7 +234,7 @@ void PalGraspDetectionNode::cloud_callback(const sensor_msgs::PointCloud2ConstPt
       sensor_msgs::PointCloud2Ptr transformed_msg(new sensor_msgs::PointCloud2);
       pcl_ros::transformPointCloud(frame_, *msg, *transformed_msg, _tfListener);
       pcl::fromROSMsg(*transformed_msg, *cloud);
-      cloud_camera_ = new CloudCamera(cloud, 0, view_points);
+      cloud_camera_.reset(new CloudCamera(cloud, 0, view_points));
       cloud_camera_header_ = msg->header;
       ROS_INFO_STREAM("Received cloud with " << cloud_camera_->getCloudProcessed()->size()
                                              << " points.");
@@ -316,10 +315,6 @@ void PalGraspDetectionNode::samples_callback(const gpd::SamplesMsg& msg)
 
 void PalGraspDetectionNode::initCloudCamera(const gpd::CloudSources& msg)
 {
-  // clean up
-  delete cloud_camera_;
-  cloud_camera_ = NULL;
-
   // Set view points.
   Eigen::Matrix3Xd view_points(3, msg.view_points.size());
   for (int i = 0; i < msg.view_points.size(); i++)
@@ -341,7 +336,7 @@ void PalGraspDetectionNode::initCloudCamera(const gpd::CloudSources& msg)
       camera_source(msg.camera_source[i].data, i) = 1;
     }
 
-    cloud_camera_ = new CloudCamera(cloud, camera_source, view_points);
+    cloud_camera_.reset(new CloudCamera(cloud, camera_source, view_points));
   }
   else
   {
@@ -355,7 +350,7 @@ void PalGraspDetectionNode::initCloudCamera(const gpd::CloudSources& msg)
       camera_source(msg.camera_source[i].data, i) = 1;
     }
 
-    cloud_camera_ = new CloudCamera(cloud, camera_source, view_points);
+    cloud_camera_.reset(new CloudCamera(cloud, camera_source, view_points));
     std::cout << "view_points:\n" << view_points << "\n";
   }
 }
