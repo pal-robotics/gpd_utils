@@ -84,52 +84,52 @@ void ObjectRecognitionInfo::computeBBoxPoints(int &xmin, int &ymin, int &xmax, i
 
   ROS_DEBUG("Bounding box is LeftUpper : (%d, %d), RightBottom : (%d, %d)", xmin, ymin,
             xmax, ymax);
-  this->pixelTo3DPoint(xmin, ymin, bbox.lu_point);
-  ROS_DEBUG("Corresponding Min Point is : %4.2f, %4.2f, %4.2f", bbox.lu_point.point.x,
-            bbox.lu_point.point.y, bbox.lu_point.point.z);
-  this->pixelTo3DPoint(xmax, ymax, bbox.rb_point);
-  ROS_DEBUG("Corresponding Max Point is : %4.2f, %4.2f, %4.2f", bbox.rb_point.point.x,
-            bbox.rb_point.point.y, bbox.rb_point.point.z);
+  this->pixelTo3DPoint(xmin, ymin, bbox.lu_point_);
+  ROS_DEBUG("Corresponding Min Point is : %4.2f, %4.2f, %4.2f", bbox.lu_point_.point.x,
+            bbox.lu_point_.point.y, bbox.lu_point_.point.z);
+  this->pixelTo3DPoint(xmax, ymax, bbox.rb_point_);
+  ROS_DEBUG("Corresponding Max Point is : %4.2f, %4.2f, %4.2f", bbox.rb_point_.point.x,
+            bbox.rb_point_.point.y, bbox.rb_point_.point.z);
   double offset = 5;
 
-  while ((std::isnan(bbox.lu_point.point.x) || std::isnan(bbox.lu_point.point.y) ||
-          std::isnan(bbox.lu_point.point.z) || std::isnan(bbox.rb_point.point.x) ||
-          std::isnan(bbox.rb_point.point.y) || std::isnan(bbox.rb_point.point.z)))
+  while ((std::isnan(bbox.lu_point_.point.x) || std::isnan(bbox.lu_point_.point.y) ||
+          std::isnan(bbox.lu_point_.point.z) || std::isnan(bbox.rb_point_.point.x) ||
+          std::isnan(bbox.rb_point_.point.y) || std::isnan(bbox.rb_point_.point.z)))
   {
-    if (std::isnan(bbox.lu_point.point.x) || std::isnan(bbox.lu_point.point.y) ||
-        std::isnan(bbox.lu_point.point.z))
+    if (std::isnan(bbox.lu_point_.point.x) || std::isnan(bbox.lu_point_.point.y) ||
+        std::isnan(bbox.lu_point_.point.z))
     {
       xmin = xmin + (offset);
       ymin = ymin + (offset);
-      this->pixelTo3DPoint(xmin, ymin, bbox.lu_point);
-      ROS_DEBUG("New Min Point is : %4.2f, %4.2f, %4.2f", bbox.lu_point.point.x,
-                bbox.lu_point.point.y, bbox.lu_point.point.z);
+      this->pixelTo3DPoint(xmin, ymin, bbox.lu_point_);
+      ROS_DEBUG("New Min Point is : %4.2f, %4.2f, %4.2f", bbox.lu_point_.point.x,
+                bbox.lu_point_.point.y, bbox.lu_point_.point.z);
     }
-    if (std::isnan(bbox.rb_point.point.x) || std::isnan(bbox.rb_point.point.y) ||
-        std::isnan(bbox.rb_point.point.z))
+    if (std::isnan(bbox.rb_point_.point.x) || std::isnan(bbox.rb_point_.point.y) ||
+        std::isnan(bbox.rb_point_.point.z))
     {
       ymax = ymax - (offset);
       xmax = xmax - (offset);
-      this->pixelTo3DPoint(xmax, ymax, bbox.rb_point);
-      ROS_DEBUG("New Max Point is : %4.2f, %4.2f, %4.2f", bbox.rb_point.point.x,
-                bbox.rb_point.point.y, bbox.rb_point.point.z);
+      this->pixelTo3DPoint(xmax, ymax, bbox.rb_point_);
+      ROS_DEBUG("New Max Point is : %4.2f, %4.2f, %4.2f", bbox.rb_point_.point.x,
+                bbox.rb_point_.point.y, bbox.rb_point_.point.z);
     }
     ROS_DEBUG("New Bounding box is LeftUpper : (%d, %d), RightBottom : (%d, %d)", xmin,
               ymin, xmax, ymax);
   }
-  this->pixelTo3DPoint((xmax + xmin) / 2, (ymax + ymin) / 2, bbox.ctr_point);
-  ROS_DEBUG("Corresponding Center Point is : %4.2f, %4.2f, %4.2f", bbox.ctr_point.point.x,
-            bbox.ctr_point.point.y, bbox.ctr_point.point.z);
+  this->pixelTo3DPoint((xmax + xmin) / 2, (ymax + ymin) / 2, bbox.ctr_point_);
+  ROS_DEBUG("Corresponding Center Point is : %4.2f, %4.2f, %4.2f", bbox.ctr_point_.point.x,
+            bbox.ctr_point_.point.y, bbox.ctr_point_.point.z);
 
-  this->transformPoint(_outFrame, bbox.lu_point);
-  this->transformPoint(_outFrame, bbox.rb_point);
-  this->transformPoint(_outFrame, bbox.ctr_point);
-  ROS_INFO("Corresponding Min Point is : %4.2f, %4.2f, %4.2f", bbox.lu_point.point.x,
-           bbox.lu_point.point.y, bbox.lu_point.point.z);
-  ROS_INFO("Corresponding Max Point is : %4.2f, %4.2f, %4.2f", bbox.rb_point.point.x,
-           bbox.rb_point.point.y, bbox.rb_point.point.z);
-  ROS_INFO("Corresponding Center Point is : %4.2f, %4.2f, %4.2f", bbox.ctr_point.point.x,
-           bbox.ctr_point.point.y, bbox.ctr_point.point.z);
+  this->transformPoint(_outFrame, bbox.lu_point_);
+  this->transformPoint(_outFrame, bbox.rb_point_);
+  this->transformPoint(_outFrame, bbox.ctr_point_);
+  ROS_INFO("Corresponding Min Point is : %4.2f, %4.2f, %4.2f", bbox.lu_point_.point.x,
+           bbox.lu_point_.point.y, bbox.lu_point_.point.z);
+  ROS_INFO("Corresponding Max Point is : %4.2f, %4.2f, %4.2f", bbox.rb_point_.point.x,
+           bbox.rb_point_.point.y, bbox.rb_point_.point.z);
+  ROS_INFO("Corresponding Center Point is : %4.2f, %4.2f, %4.2f", bbox.ctr_point_.point.x,
+           bbox.ctr_point_.point.y, bbox.ctr_point_.point.z);
 }
 
 /**

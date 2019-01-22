@@ -3,7 +3,7 @@
 
 // PAL headers
 #include <gpd_utils/pcl_filters.hpp>
-#include <gpd_utils/BoundingBox.h>
+#include <gpd_utils/object_bounding_box.h>
 
 // ROS headers
 #include <ros/ros.h>
@@ -110,19 +110,19 @@ void TableTopDetector<PointT>::getObjectCloud(const typename pcl::PointCloud<Poi
                                               typename pcl::PointCloud<PointT>::Ptr &object_cloud)
 {
   double xmin, xmax, ymin, ymax;
-  xmin = 0.7 * bb_points.ctr_point.point.x;
-  xmax = 1.2 * bb_points.ctr_point.point.x;
-  ymin = bb_points.rb_point.point.y;
-  ymax = bb_points.lu_point.point.y;
+  xmin = 0.7 * bb_points.ctr_point_.point.x;
+  xmax = 1.2 * bb_points.ctr_point_.point.x;
+  ymin = bb_points.rb_point_.point.y;
+  ymax = bb_points.lu_point_.point.y;
 
   /// Checks if the ymax is less than the ymin, which usually happens when the objects
   /// is covered by background, and in some cases, when the ymax is less than the
   /// objects centre point, and When the ymax is too far compared than it should be,
   /// then it tries to define its own limit computing from the center point and the
   /// minimum point
-  ymax = ((ymax < ymin) || (ymax < bb_points.ctr_point.point.y) ||
-          (ymax > (bb_points.ctr_point.point.y + 2.0 * (bb_points.ctr_point.point.y - ymin)))) ?
-             (bb_points.ctr_point.point.y + (bb_points.ctr_point.point.y - ymin)) :
+  ymax = ((ymax < ymin) || (ymax < bb_points.ctr_point_.point.y) ||
+          (ymax > (bb_points.ctr_point_.point.y + 2.0 * (bb_points.ctr_point_.point.y - ymin)))) ?
+             (bb_points.ctr_point_.point.y + (bb_points.ctr_point_.point.y - ymin)) :
              ymax;
 
   ROS_INFO("Received point cloud with %ld points", tabletop_cloud->points.size());

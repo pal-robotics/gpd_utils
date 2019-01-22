@@ -5,7 +5,7 @@
 #include <gpd_utils/pcl_filters.hpp>
 #include <pal_detection_msgs/RecognizeObjectsAction.h>
 #include <pal_detection_msgs/RecognizedObjectArray.h>
-#include <gpd_utils/BoundingBox.h>
+#include <gpd_utils/object_bounding_box.h>
 
 // PCL headers
 #include <pcl_conversions/pcl_conversions.h>

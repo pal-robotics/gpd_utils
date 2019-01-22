@@ -6,6 +6,7 @@
 #include <sensor_msgs/CompressedImage.h>
 #include <gpd_utils/tabletop_detector_class.h>
 #include <gpd_utils/object_recognition_info.h>
+#include <gpd_utils/object_bounding_box.h>
 
 namespace pal
 {

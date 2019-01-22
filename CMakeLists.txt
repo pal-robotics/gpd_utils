@@ -47,11 +47,6 @@ find_package(catkin REQUIRED COMPONENTS
 find_library(GENERATOR_LIB grasp_candidates_generator)
 find_path(GENERATOR_LIB_INCLUDE_DIR gpg/grasp.h)
 
-## Generate messages in the 'msg' folder
- add_message_files(
-   FILES
-   BoundingBox.msg)
-
 ## Generate actions in the 'action' folder
 add_action_files(
    FILES

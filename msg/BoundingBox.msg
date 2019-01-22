@@ -1,3 +1,0 @@
-geometry_msgs/PointStamped lu_point
-geometry_msgs/PointStamped rb_point
-geometry_msgs/PointStamped ctr_point
