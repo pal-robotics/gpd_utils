@@ -4,7 +4,7 @@ using namespace pal;
 
 TableTopSegmentationState::TableTopSegmentationState(ros::NodeHandle &nh, ros::NodeHandle &pnh,
                                                      const PlanarSegmentationParams &params,
-                                                     const int &num_attempts)
+                                                     const int num_attempts)
   : nh_(nh)
   , pnh_(pnh)
   , segment_plane_(nh_, pnh_, params)

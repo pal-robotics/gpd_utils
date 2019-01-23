@@ -26,39 +26,37 @@ public:
 
   virtual ~ObjectRecognitionInfo();
 
-  bool computeObjectBoundingBox(const std::string &object_name,
-                                gpd_utils::BoundingBox &bbox);
+  bool computeObjectBoundingBox(const std::string &object_name, gpd_utils::BoundingBox &bbox);
 
   void setPointCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &point_cloud);
 
   void setImage(sensor_msgs::CompressedImagePtr &image);
 
 private:
-  void pixelTo3DPoint(const int &u, const int &v, geometry_msgs::PointStamped &p);
+  void pixelTo3DPoint(const int u, const int v, geometry_msgs::PointStamped &p) const;
 
   void recognizedObjectsInfo(const pal_detection_msgs::RecognizedObjectArray &recognized_objects,
                              std::vector<std::string> &classes,
-                             std::vector<sensor_msgs::RegionOfInterest> &bboxes);
+                             std::vector<sensor_msgs::RegionOfInterest> &bboxes) const;
 
-  void transformPoint(const std::string &frame_id, geometry_msgs::PointStamped &point_out);
+  void transformPoint(const std::string &frame_id, geometry_msgs::PointStamped &point_out) const;
 
   void computeBBoxPoints(int &xmin, int &ymin, int &xmax, int &ymax,
-                         gpd_utils::BoundingBox &bbox);
+                         gpd_utils::BoundingBox &bbox) const;
 
-  bool isOverlap(const int &object_index, const std::vector<sensor_msgs::RegionOfInterest> &BBoxes,
-                 const std::vector<std::string> &classes);
+  bool isOverlap(const int object_index, const std::vector<sensor_msgs::RegionOfInterest> &BBoxes,
+                 const std::vector<std::string> &classes) const;
 
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr point_cloud_;
   sensor_msgs::CompressedImagePtr image_;
 
-  ros::NodeHandle &nh_;
+  ros::NodeHandle nh_;
 
   tf::TransformListener _tfListener;
 
   // frame in which the point cloud will be transformed and processed
-  std::string _outFrame;
+  std::string out_frame_;
 
-  geometry_msgs::PointStamped point_lu, point_rb, point_ctr;
   actionlib::SimpleActionClient<pal_detection_msgs::RecognizeObjectsAction> ac_;
   std::string desired_object_;
   bool received_data_;

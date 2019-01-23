@@ -24,34 +24,34 @@ public:
 
   bool extractOneCluster(const typename pcl::PointCloud<PointT>::Ptr &cloud,
                          typename pcl::PointCloud<PointT>::Ptr &clusterCloud,
-                         const int &points_threshold = 100);
+                         const int points_threshold = 100) const;
 
   void getObjectCloud(const typename pcl::PointCloud<PointT>::Ptr &tabletop_cloud,
                       const gpd_utils::BoundingBox &bb_points,
-                      typename pcl::PointCloud<PointT>::Ptr &object_cloud);
+                      typename pcl::PointCloud<PointT>::Ptr &object_cloud) const;
 
 private:
-  ros::NodeHandle &nh_;
-  bool _enabled;
-  double _rate;
+  ros::NodeHandle nh_;
+  bool enabled_;
+  double rate_;
 
   // ROS rate and time
-  boost::scoped_ptr<ros::Rate> _loopRate;
-  double _period;
+  boost::scoped_ptr<ros::Rate> loop_rate_;
+  double period_;
 
   typename pcl::PointCloud<PointT>::Ptr diff_cloud_;
 };
 
 template <class PointT>
 TableTopDetector<PointT>::TableTopDetector(ros::NodeHandle &nh)
-  : nh_(nh), _enabled(false), _rate(1.0)
+  : nh_(nh), enabled_(false), rate_(1.0)
 {
   diff_cloud_.reset(new pcl::PointCloud<PointT>());
 
-  ROS_INFO_STREAM("The node will operate at " << _rate << " Hz");
+  ROS_INFO_STREAM("The node will operate at " << rate_ << " Hz");
 
-  _loopRate.reset(new ros::Rate(_rate));
-  _period = 1.0 / _rate;
+  loop_rate_.reset(new ros::Rate(rate_));
+  period_ = 1.0 / rate_;
 }
 
 template <class PointT>
@@ -63,7 +63,7 @@ TableTopDetector<PointT>::~TableTopDetector()
 template <class PointT>
 bool TableTopDetector<PointT>::extractOneCluster(const typename pcl::PointCloud<PointT>::Ptr &cloud,
                                                  typename pcl::PointCloud<PointT>::Ptr &clusterCloud,
-                                                 const int &points_threshold)
+                                                 const int points_threshold) const
 {
   if ((cloud->width * cloud->height) == 0)
   {
@@ -72,7 +72,7 @@ bool TableTopDetector<PointT>::extractOneCluster(const typename pcl::PointCloud<
   }
 
   // Euclidean Cluster Extraction
-  std::vector<pcl::PointIndices> cluster_indices;
+  std::vector<pcl::PointIndices> cluster_indices = {};
   pal::euclidean_cluster_extraction<PointT>(cloud, cluster_indices);
 
   for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin();
@@ -107,9 +107,9 @@ bool TableTopDetector<PointT>::extractOneCluster(const typename pcl::PointCloud<
 template <class PointT>
 void TableTopDetector<PointT>::getObjectCloud(const typename pcl::PointCloud<PointT>::Ptr &tabletop_cloud,
                                               const gpd_utils::BoundingBox &bb_points,
-                                              typename pcl::PointCloud<PointT>::Ptr &object_cloud)
+                                              typename pcl::PointCloud<PointT>::Ptr &object_cloud) const
 {
-  double xmin, xmax, ymin, ymax;
+  double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0;
   xmin = 0.7 * bb_points.ctr_point_.point.x;
   xmax = 1.2 * bb_points.ctr_point_.point.x;
   ymin = bb_points.rb_point_.point.y;

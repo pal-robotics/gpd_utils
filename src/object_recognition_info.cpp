@@ -6,7 +6,7 @@ ObjectRecognitionInfo::ObjectRecognitionInfo(ros::NodeHandle &nh)
   : nh_(nh)
   , ac_("/inference_server", true)
   , desired_object_()
-  , _outFrame("/base_footprint")
+  , out_frame_("/base_footprint")
   , received_data_(false)
 {
   lu_pub_ = nh_.advertise<geometry_msgs::PointStamped>("bounding_box_point_lu", 10, true);
@@ -35,8 +35,8 @@ void ObjectRecognitionInfo::setImage(sensor_msgs::CompressedImagePtr &image)
   image_ = image;
 }
 
-void ObjectRecognitionInfo::pixelTo3DPoint(const int &u, const int &v,
-                                           geometry_msgs::PointStamped &p)
+void ObjectRecognitionInfo::pixelTo3DPoint(const int u, const int v,
+                                           geometry_msgs::PointStamped &p) const
 {
   pcl_conversions::fromPCL(point_cloud_->header.stamp, p.header.stamp);
   p.header.frame_id = point_cloud_->header.frame_id;
@@ -46,7 +46,7 @@ void ObjectRecognitionInfo::pixelTo3DPoint(const int &u, const int &v,
 }
 
 void ObjectRecognitionInfo::transformPoint(const std::string &frame_id,
-                                           geometry_msgs::PointStamped &point)
+                                           geometry_msgs::PointStamped &point) const
 {
   ROS_INFO_STREAM("Transforming point from frame " << point.header.frame_id
                                                    << " to frame " << frame_id);
@@ -68,7 +68,7 @@ void ObjectRecognitionInfo::transformPoint(const std::string &frame_id,
 }
 
 void ObjectRecognitionInfo::computeBBoxPoints(int &xmin, int &ymin, int &xmax, int &ymax,
-                                              gpd_utils::BoundingBox &bbox)
+                                              gpd_utils::BoundingBox &bbox) const
 {
   xmin = ((xmin - bb_padding_) <= 0) ? int(0.4 * bb_padding_) : xmin - bb_padding_;
   xmax = ((xmax + bb_padding_) > point_cloud_->width) ?
@@ -118,12 +118,12 @@ void ObjectRecognitionInfo::computeBBoxPoints(int &xmin, int &ymin, int &xmax, i
               ymin, xmax, ymax);
   }
   this->pixelTo3DPoint((xmax + xmin) / 2, (ymax + ymin) / 2, bbox.ctr_point_);
-  ROS_DEBUG("Corresponding Center Point is : %4.2f, %4.2f, %4.2f", bbox.ctr_point_.point.x,
-            bbox.ctr_point_.point.y, bbox.ctr_point_.point.z);
+  ROS_DEBUG("Corresponding Center Point is : %4.2f, %4.2f, %4.2f",
+            bbox.ctr_point_.point.x, bbox.ctr_point_.point.y, bbox.ctr_point_.point.z);
 
-  this->transformPoint(_outFrame, bbox.lu_point_);
-  this->transformPoint(_outFrame, bbox.rb_point_);
-  this->transformPoint(_outFrame, bbox.ctr_point_);
+  this->transformPoint(out_frame_, bbox.lu_point_);
+  this->transformPoint(out_frame_, bbox.rb_point_);
+  this->transformPoint(out_frame_, bbox.ctr_point_);
   ROS_INFO("Corresponding Min Point is : %4.2f, %4.2f, %4.2f", bbox.lu_point_.point.x,
            bbox.lu_point_.point.y, bbox.lu_point_.point.z);
   ROS_INFO("Corresponding Max Point is : %4.2f, %4.2f, %4.2f", bbox.rb_point_.point.x,
@@ -143,9 +143,9 @@ void ObjectRecognitionInfo::computeBBoxPoints(int &xmin, int &ymin, int &xmax, i
  * @param BBoxes - vector of bounding boxes
  * @return true, if there is an overlap and false, if there is no overlap
  */
-bool ObjectRecognitionInfo::isOverlap(const int &object_index,
+bool ObjectRecognitionInfo::isOverlap(const int object_index,
                                       const std::vector<sensor_msgs::RegionOfInterest> &BBoxes,
-                                      const std::vector<std::string> &classes)
+                                      const std::vector<std::string> &classes) const
 {
   int object_bb_xmin = ((BBoxes.at(object_index).x_offset - (2 * bb_padding_)) <= 0) ?
                            int(0.4 * bb_padding_) :
@@ -159,7 +159,7 @@ bool ObjectRecognitionInfo::isOverlap(const int &object_index,
   int object_bb_width = (object_bb_xmax - object_bb_xmin) / 2;
   int xmin, xmax, bb_ctr, bb_width, distance;
   bool is_overlap = false;
-  for (size_t i = 0; i < BBoxes.size(); i++)
+  for (int i = 0; i < BBoxes.size(); i++)
   {
     if (i == object_index)
       continue;
@@ -186,7 +186,7 @@ bool ObjectRecognitionInfo::isOverlap(const int &object_index,
 
 void ObjectRecognitionInfo::recognizedObjectsInfo(
     const pal_detection_msgs::RecognizedObjectArray &recognized_objects,
-    std::vector<std::string> &classes, std::vector<sensor_msgs::RegionOfInterest> &bboxes)
+    std::vector<std::string> &classes, std::vector<sensor_msgs::RegionOfInterest> &bboxes) const
 {
   classes.clear();
   bboxes.clear();

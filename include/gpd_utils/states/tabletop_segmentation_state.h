@@ -21,7 +21,7 @@ public:
 
   TableTopSegmentationState(ros::NodeHandle &nh, ros::NodeHandle &pnh,
                             const PlanarSegmentationParams &params,
-                            const int &num_attempts = 1);
+                            const int num_attempts = 1);
 
   virtual ~TableTopSegmentationState();
 
