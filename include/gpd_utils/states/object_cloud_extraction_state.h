@@ -11,8 +11,8 @@
 namespace pal
 {
 /**
- * @brief The ObjectCloudExtractionState class - helps to get the cluster of an individual recognisable object in the pointcloud
- * and use the info for grasping
+ * @brief The ObjectCloudExtractionState class - helps to get the cluster of an individual
+ * recognisable object in the pointcloud and use the info for grasping
  */
 class ObjectCloudExtractionState : public smach_c::State
 {
@@ -34,4 +34,4 @@ protected:
 };
 }
 
-#endif // OBJECT_CLOUD_EXTRACTION_STATE_H
+#endif  // OBJECT_CLOUD_EXTRACTION_STATE_H

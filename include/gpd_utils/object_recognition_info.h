@@ -28,9 +28,9 @@ public:
 
   bool computeObjectBoundingBox(const std::string &object_name, gpd_utils::BoundingBox &bbox);
 
-  void setPointCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &point_cloud);
+  void setPointCloud(const pcl::PointCloud<pcl::PointXYZRGB>::Ptr &point_cloud);
 
-  void setImage(sensor_msgs::CompressedImagePtr &image);
+  void setImage(const sensor_msgs::CompressedImagePtr &image);
 
 private:
   void pixelTo3DPoint(const int u, const int v, geometry_msgs::PointStamped &p) const;

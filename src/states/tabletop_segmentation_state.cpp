@@ -2,7 +2,7 @@
 
 using namespace pal;
 
-TableTopSegmentationState::TableTopSegmentationState(ros::NodeHandle &nh, ros::NodeHandle &pnh,
+TableTopSegmentationState::TableTopSegmentationState(const ros::NodeHandle &nh, const ros::NodeHandle &pnh,
                                                      const PlanarSegmentationParams &params,
                                                      const int num_attempts)
   : nh_(nh)

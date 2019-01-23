@@ -2,7 +2,7 @@
 
 using namespace pal;
 
-GenerateGraspingCandidatesState::GenerateGraspingCandidatesState(ros::NodeHandle &nh)
+GenerateGraspingCandidatesState::GenerateGraspingCandidatesState(const ros::NodeHandle &nh)
   : nh_(nh)
   , ac_("/generate_grasp_candidates", true)
   , State({ smach_c::SUCCESS, smach_c::PREEMPTED, smach_c::FAILURE })

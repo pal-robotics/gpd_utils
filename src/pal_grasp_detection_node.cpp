@@ -148,7 +148,7 @@ void PalGraspDetectionNode::run()
 }
 
 void PalGraspDetectionNode::convertToGraspPoses(const std::vector<Grasp>& grasps,
-                                                geometry_msgs::PoseArray& grasp_poses)
+                                                geometry_msgs::PoseArray& grasp_poses) const
 {
   grasp_poses.header = cloud_camera_header_;
   geometry_msgs::Pose grasp_pose;
@@ -166,7 +166,7 @@ void PalGraspDetectionNode::convertToGraspPoses(const std::vector<Grasp>& grasps
   }
 }
 
-std::vector<Grasp> PalGraspDetectionNode::detectGraspPosesInTopic()
+std::vector<Grasp> PalGraspDetectionNode::detectGraspPosesInTopic() const
 {
   // detect grasp poses
   std::vector<Grasp> grasps;
@@ -198,7 +198,7 @@ std::vector<Grasp> PalGraspDetectionNode::detectGraspPosesInTopic()
 
 std::vector<int> PalGraspDetectionNode::getSamplesInBall(const PointCloudRGBA::Ptr& cloud,
                                                          const pcl::PointXYZRGBA& centroid,
-                                                         float radius)
+                                                         float radius) const
 {
   std::vector<int> indices;
   std::vector<float> dists;
@@ -356,7 +356,7 @@ void PalGraspDetectionNode::initCloudCamera(const gpd::CloudSources& msg)
 }
 
 
-gpd::GraspConfigList PalGraspDetectionNode::createGraspListMsg(const std::vector<Grasp>& hands)
+gpd::GraspConfigList PalGraspDetectionNode::createGraspListMsg(const std::vector<Grasp>& hands) const
 {
   gpd::GraspConfigList msg;
 
@@ -369,7 +369,7 @@ gpd::GraspConfigList PalGraspDetectionNode::createGraspListMsg(const std::vector
 }
 
 
-gpd::GraspConfig PalGraspDetectionNode::convertToGraspMsg(const Grasp& hand)
+gpd::GraspConfig PalGraspDetectionNode::convertToGraspMsg(const Grasp& hand) const
 {
   gpd::GraspConfig msg;
   tf::pointEigenToMsg(hand.getGraspBottom(), msg.bottom);

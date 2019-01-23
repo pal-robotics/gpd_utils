@@ -19,9 +19,8 @@ public:
   //               smach_c::FAILURE in the case of failure
   //               smach_c::PREEMPTED in the case of preemption
 
-  TableTopSegmentationState(ros::NodeHandle &nh, ros::NodeHandle &pnh,
-                            const PlanarSegmentationParams &params,
-                            const int num_attempts = 1);
+  TableTopSegmentationState(const ros::NodeHandle &nh, const ros::NodeHandle &pnh,
+                            const PlanarSegmentationParams &params, const int num_attempts = 1);
 
   virtual ~TableTopSegmentationState();
 

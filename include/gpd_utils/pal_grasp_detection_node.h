@@ -74,7 +74,7 @@ public:
    * \brief Detect grasp poses in a point cloud received from a ROS topic.
    * \return the list of grasp poses
   */
-  std::vector<Grasp> detectGraspPosesInTopic();
+  std::vector<Grasp> detectGraspPosesInTopic() const;
 
 
 private:
@@ -87,7 +87,7 @@ private:
    * \return the indices of the points in the point cloud that lie within the ball
   */
   std::vector<int> getSamplesInBall(const PointCloudRGBA::Ptr& cloud,
-                                    const pcl::PointXYZRGBA& centroid, float radius);
+                                    const pcl::PointXYZRGBA& centroid, float radius) const;
 
   /**
    * \brief Callback function for the ROS topic that contains the input point cloud.
@@ -127,7 +127,7 @@ private:
    * @param grasps - input of the gpd type vector of graps
    * @param grasp_poses - output of poses in geometry_msgs PoseArray
    */
-  void convertToGraspPoses(const std::vector<Grasp>& grasps, geometry_msgs::PoseArray& grasp_poses);
+  void convertToGraspPoses(const std::vector<Grasp>& grasps, geometry_msgs::PoseArray& grasp_poses) const;
 
   /**
    * \brief Create a ROS message that contains a list of grasp poses from a list of
@@ -135,11 +135,9 @@ private:
    * \param hands the list of grasps
    * \return the ROS message that contains the grasp poses
   */
-  gpd::GraspConfigList createGraspListMsg(const std::vector<Grasp>& hands);
+  gpd::GraspConfigList createGraspListMsg(const std::vector<Grasp>& hands) const;
 
-  gpd::GraspConfig convertToGraspMsg(const Grasp& hand);
-
-  Eigen::Matrix3Xd fillMatrixFromFile(const std::string& filename, int num_normals);
+  gpd::GraspConfig convertToGraspMsg(const Grasp& hand) const;
 
   Eigen::Vector3d view_point_;  ///< (input) view point of the camera onto the point cloud
 

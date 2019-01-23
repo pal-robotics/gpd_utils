@@ -25,12 +25,12 @@ ObjectRecognitionInfo::~ObjectRecognitionInfo()
 {
 }
 
-void ObjectRecognitionInfo::setPointCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &point_cloud)
+void ObjectRecognitionInfo::setPointCloud(const pcl::PointCloud<pcl::PointXYZRGB>::Ptr &point_cloud)
 {
   point_cloud_ = point_cloud;
 }
 
-void ObjectRecognitionInfo::setImage(sensor_msgs::CompressedImagePtr &image)
+void ObjectRecognitionInfo::setImage(const sensor_msgs::CompressedImagePtr &image)
 {
   image_ = image;
 }

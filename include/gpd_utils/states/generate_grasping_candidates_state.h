@@ -22,7 +22,7 @@ public:
   //               smach_c::FAILURE in the case of failure
   //               smach_c::PREEMPTED in the case of preemption
 
-  GenerateGraspingCandidatesState(ros::NodeHandle &nh);
+  GenerateGraspingCandidatesState(const ros::NodeHandle &nh);
 
   virtual ~GenerateGraspingCandidatesState();
 
