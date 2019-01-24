@@ -277,8 +277,8 @@ bool PlanarSegmentation<PointT>::processCloudData()
   typename pcl::PointCloud<PointT>::Ptr pclPlaneCloud(new typename pcl::PointCloud<PointT>);
   typename pcl::PointCloud<PointT>::Ptr pclNonPlaneCloud(new typename pcl::PointCloud<PointT>);
   plane_coeff_.reset(new pcl::ModelCoefficients);
-  pal::planeSegmentation<PointT>(pclDownSampledCloud, &pclPlaneCloud, &pclNonPlaneCloud,
-                                 &plane_coeff_);
+  pal::planeSegmentation<PointT>(pclDownSampledCloud, 0.005, &pclPlaneCloud,
+                                 &pclNonPlaneCloud, &plane_coeff_);
 
 
   // filter outliers in the plane cloud
