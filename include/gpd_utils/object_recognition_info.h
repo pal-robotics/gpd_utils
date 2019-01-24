@@ -33,7 +33,7 @@ public:
   void setImage(const sensor_msgs::CompressedImagePtr &image);
 
 private:
-  void pixelTo3DPoint(const int u, const int v, geometry_msgs::PointStamped &p) const;
+  void pixelTo3DPoint(int u, int v, geometry_msgs::PointStamped &p) const;
 
   void recognizedObjectsInfo(const pal_detection_msgs::RecognizedObjectArray &recognized_objects,
                              std::vector<std::string> &classes,
@@ -44,7 +44,7 @@ private:
   void computeBBoxPoints(int &xmin, int &ymin, int &xmax, int &ymax,
                          gpd_utils::BoundingBox &bbox) const;
 
-  bool isOverlap(const int object_index, const std::vector<sensor_msgs::RegionOfInterest> &BBoxes,
+  bool isOverlap(int object_index, const std::vector<sensor_msgs::RegionOfInterest> &BBoxes,
                  const std::vector<std::string> &classes) const;
 
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr point_cloud_;

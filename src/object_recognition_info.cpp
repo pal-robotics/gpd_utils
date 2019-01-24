@@ -35,8 +35,7 @@ void ObjectRecognitionInfo::setImage(const sensor_msgs::CompressedImagePtr &imag
   image_ = image;
 }
 
-void ObjectRecognitionInfo::pixelTo3DPoint(const int u, const int v,
-                                           geometry_msgs::PointStamped &p) const
+void ObjectRecognitionInfo::pixelTo3DPoint(int u, int v, geometry_msgs::PointStamped &p) const
 {
   pcl_conversions::fromPCL(point_cloud_->header.stamp, p.header.stamp);
   p.header.frame_id = point_cloud_->header.frame_id;
@@ -143,7 +142,7 @@ void ObjectRecognitionInfo::computeBBoxPoints(int &xmin, int &ymin, int &xmax, i
  * @param BBoxes - vector of bounding boxes
  * @return true, if there is an overlap and false, if there is no overlap
  */
-bool ObjectRecognitionInfo::isOverlap(const int object_index,
+bool ObjectRecognitionInfo::isOverlap(int object_index,
                                       const std::vector<sensor_msgs::RegionOfInterest> &BBoxes,
                                       const std::vector<std::string> &classes) const
 {

@@ -2,9 +2,10 @@
 
 using namespace pal;
 
-TableTopSegmentationState::TableTopSegmentationState(const ros::NodeHandle &nh, const ros::NodeHandle &pnh,
+TableTopSegmentationState::TableTopSegmentationState(const ros::NodeHandle &nh,
+                                                     const ros::NodeHandle &pnh,
                                                      const PlanarSegmentationParams &params,
-                                                     const int num_attempts)
+                                                     int num_attempts)
   : nh_(nh)
   , pnh_(pnh)
   , segment_plane_(nh_, pnh_, params)

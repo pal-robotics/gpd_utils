@@ -24,7 +24,7 @@ public:
 
   bool extractOneCluster(const typename pcl::PointCloud<PointT>::Ptr &cloud,
                          typename pcl::PointCloud<PointT>::Ptr &clusterCloud,
-                         const int points_threshold = 100) const;
+                         int points_threshold = 100) const;
 
   void getObjectCloud(const typename pcl::PointCloud<PointT>::Ptr &tabletop_cloud,
                       const gpd_utils::BoundingBox &bb_points,
@@ -63,7 +63,7 @@ TableTopDetector<PointT>::~TableTopDetector()
 template <class PointT>
 bool TableTopDetector<PointT>::extractOneCluster(const typename pcl::PointCloud<PointT>::Ptr &cloud,
                                                  typename pcl::PointCloud<PointT>::Ptr &clusterCloud,
-                                                 const int points_threshold) const
+                                                 int points_threshold) const
 {
   if ((cloud->width * cloud->height) == 0)
   {

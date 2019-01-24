@@ -20,7 +20,7 @@ public:
   //               smach_c::PREEMPTED in the case of preemption
 
   TableTopSegmentationState(const ros::NodeHandle &nh, const ros::NodeHandle &pnh,
-                            const PlanarSegmentationParams &params, const int num_attempts = 1);
+                            const PlanarSegmentationParams &params, int num_attempts = 1);
 
   virtual ~TableTopSegmentationState();
 
