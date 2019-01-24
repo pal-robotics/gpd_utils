@@ -49,7 +49,7 @@ private:
    * \brief Callback function for the ROS topic that contains the input point cloud.
    * \param msg the incoming ROS message
   */
-  void cloud_callback(const sensor_msgs::PointCloud2ConstPtr& msg);
+  void cloudCallback(const sensor_msgs::PointCloud2ConstPtr& msg);
 
   bool has_cloud_;
   sensor_msgs::PointCloud2 cloud_data_;

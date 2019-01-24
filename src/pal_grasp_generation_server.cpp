@@ -53,7 +53,7 @@ PalGraspGenerationServer::PalGraspGenerationServer(ros::NodeHandle& node)
   if (!samples_topic.empty())
   {
     samples_sub_ =
-        nh_.subscribe(samples_topic, 1, &PalGraspGenerationServer::samples_callback, this);
+        nh_.subscribe(samples_topic, 1, &PalGraspGenerationServer::samplesCallback, this);
     has_samples_ = false;
   }
 
@@ -193,7 +193,7 @@ void PalGraspGenerationServer::generateCandidates(const gpd_utils::GraspCandidat
   }
 }
 
-void PalGraspGenerationServer::samples_callback(const gpd::SamplesMsg& msg)
+void PalGraspGenerationServer::samplesCallback(const gpd::SamplesMsg& msg)
 {
   if (!has_samples_)
   {

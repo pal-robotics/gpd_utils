@@ -57,14 +57,14 @@ PalGraspDetectionNode::PalGraspDetectionNode(ros::NodeHandle& node, std::string 
 
   // subscribe to input point cloud ROS topic
   if (cloud_type == POINT_CLOUD_2)
-    cloud_sub_ = node.subscribe(cloud_topic, 1, &PalGraspDetectionNode::cloud_callback, this);
+    cloud_sub_ = node.subscribe(cloud_topic, 1, &PalGraspDetectionNode::cloudCallback, this);
   else if (cloud_type == CLOUD_INDEXED)
     cloud_sub_ =
-        node.subscribe(cloud_topic, 1, &PalGraspDetectionNode::cloud_indexed_callback, this);
+        node.subscribe(cloud_topic, 1, &PalGraspDetectionNode::cloudIndexedCallback, this);
   else if (cloud_type == CLOUD_SAMPLES)
   {
     cloud_sub_ =
-        node.subscribe(cloud_topic, 1, &PalGraspDetectionNode::cloud_samples_callback, this);
+        node.subscribe(cloud_topic, 1, &PalGraspDetectionNode::cloudSamplesCallback, this);
     //    grasp_detector_->setUseIncomingSamples(true);
     has_samples_ = false;
   }
@@ -73,7 +73,7 @@ PalGraspDetectionNode::PalGraspDetectionNode(ros::NodeHandle& node, std::string 
   if (!samples_topic.empty())
   {
     samples_sub_ =
-        node.subscribe(samples_topic, 1, &PalGraspDetectionNode::samples_callback, this);
+        node.subscribe(samples_topic, 1, &PalGraspDetectionNode::samplesCallback, this);
     has_samples_ = false;
   }
 
@@ -209,7 +209,7 @@ std::vector<int> PalGraspDetectionNode::getSamplesInBall(const PointCloudRGBA::P
 }
 
 
-void PalGraspDetectionNode::cloud_callback(const sensor_msgs::PointCloud2ConstPtr& msg)
+void PalGraspDetectionNode::cloudCallback(const sensor_msgs::PointCloud2ConstPtr& msg)
 {
   if (!has_cloud_)
   {
@@ -246,7 +246,7 @@ void PalGraspDetectionNode::cloud_callback(const sensor_msgs::PointCloud2ConstPt
 }
 
 
-void PalGraspDetectionNode::cloud_indexed_callback(const gpd::CloudIndexed& msg)
+void PalGraspDetectionNode::cloudIndexedCallback(const gpd::CloudIndexed& msg)
 {
   if (!has_cloud_)
   {
@@ -269,7 +269,7 @@ void PalGraspDetectionNode::cloud_indexed_callback(const gpd::CloudIndexed& msg)
 }
 
 
-void PalGraspDetectionNode::cloud_samples_callback(const gpd::CloudSamples& msg)
+void PalGraspDetectionNode::cloudSamplesCallback(const gpd::CloudSamples& msg)
 {
   if (!has_cloud_)
   {
@@ -294,7 +294,7 @@ void PalGraspDetectionNode::cloud_samples_callback(const gpd::CloudSamples& msg)
 }
 
 
-void PalGraspDetectionNode::samples_callback(const gpd::SamplesMsg& msg)
+void PalGraspDetectionNode::samplesCallback(const gpd::SamplesMsg& msg)
 {
   if (!has_samples_)
   {

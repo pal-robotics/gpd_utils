@@ -97,7 +97,7 @@ private:
    * \brief Callback function for the ROS topic that contains the input samples.
    * \param msg the incoming ROS message
   */
-  void samples_callback(const gpd::SamplesMsg& msg);
+  void samplesCallback(const gpd::SamplesMsg& msg);
 
   /**
    * @brief convertToGraspPoses function helps to convert the gpd grasps to normal

@@ -93,21 +93,21 @@ private:
    * \brief Callback function for the ROS topic that contains the input point cloud.
    * \param msg the incoming ROS message
   */
-  void cloud_callback(const sensor_msgs::PointCloud2ConstPtr& msg);
+  void cloudCallback(const sensor_msgs::PointCloud2ConstPtr& msg);
 
   /**
    * \brief Callback function for the ROS topic that contains the input point cloud and a
    * list of indices.
    * \param msg the incoming ROS message
   */
-  void cloud_indexed_callback(const gpd::CloudIndexed& msg);
+  void cloudIndexedCallback(const gpd::CloudIndexed& msg);
 
   /**
    * \brief Callback function for the ROS topic that contains the input point cloud and a
    * list of (x,y,z) samples.
    * \param msg the incoming ROS message
   */
-  void cloud_samples_callback(const gpd::CloudSamples& msg);
+  void cloudSamplesCallback(const gpd::CloudSamples& msg);
 
   /**
    * \brief Initialize the <cloud_camera> object given a <cloud_sources> message.
@@ -119,7 +119,7 @@ private:
    * \brief Callback function for the ROS topic that contains the input samples.
    * \param msg the incoming ROS message
   */
-  void samples_callback(const gpd::SamplesMsg& msg);
+  void samplesCallback(const gpd::SamplesMsg& msg);
 
   /**
    * @brief convertToGraspPoses function helps to convert the gpd grasps to normal
