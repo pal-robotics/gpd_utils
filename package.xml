@@ -66,6 +66,7 @@
   <build_depend>tf</build_depend>
   <build_depend>message_filters</build_depend>
   <build_depend>pal_ariles</build_depend>
+  <build_depend>pal_pcl</build_depend>
 
   <build_export_depend>pcl_conversions</build_export_depend>
   <build_export_depend>pal_detection_msgs</build_export_depend>
@@ -74,6 +75,7 @@
   <build_export_depend>smach_c_ros_states</build_export_depend>
   <build_export_depend>tf</build_export_depend>
   <build_export_depend>message_filters</build_export_depend>
+  <build_export_depend>pal_pcl</build_export_depend>
 
   <exec_depend>actionlib</exec_depend>
   <exec_depend>actionlib_msgs</exec_depend>

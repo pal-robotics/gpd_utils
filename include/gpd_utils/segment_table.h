@@ -2,7 +2,7 @@
 #define SEGMENT_TABLE_H
 
 // PAL headers
-#include <gpd_utils/pcl_filters.hpp>
+#include <pal_pcl/pcl_filters.hpp>
 
 // ROS headers
 #include <ros/ros.h>

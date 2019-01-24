@@ -2,7 +2,7 @@
 #define TABLETOP_DETECTOR_CLASS_H
 
 // PAL headers
-#include <gpd_utils/pcl_filters.hpp>
+#include <pal_pcl/pcl_filters.hpp>
 #include <gpd_utils/object_bounding_box.h>
 
 // ROS headers
@@ -73,7 +73,7 @@ bool TableTopDetector<PointT>::extractOneCluster(const typename pcl::PointCloud<
 
   // Euclidean Cluster Extraction
   std::vector<pcl::PointIndices> cluster_indices = {};
-  pal::euclidean_cluster_extraction<PointT>(cloud, cluster_indices);
+  pal::euclideanClusterExtraction<PointT>(cloud, cluster_indices);
 
   for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin();
        it != cluster_indices.end(); ++it)

@@ -39,6 +39,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   message_filters
   pal_ariles
+  pal_pcl
 )
 
 ## System dependencies are found with CMake's conventions
@@ -78,7 +79,7 @@ set(STATES
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${STATES}
-  CATKIN_DEPENDS actionlib actionlib_msgs geometry_msgs gpd pcl_conversions pcl_ros roscpp sensor_msgs visualization_msgs smach_c smach_c_pal_states smach_c_ros_states std_msgs tf message_filters pal_ariles
+  CATKIN_DEPENDS actionlib actionlib_msgs geometry_msgs gpd pcl_conversions pcl_ros roscpp sensor_msgs visualization_msgs smach_c smach_c_pal_states smach_c_ros_states std_msgs tf message_filters pal_ariles pal_pcl
   DEPENDS system_lib Eigen PCL
 )
 
@@ -96,7 +97,7 @@ include_directories(
 )
 
 ## Declare a C++ library
-add_library(${PROJECT_NAME} src/pcl_filters.cpp src/tabletop_detector_class.cpp src/segment_table.cpp src/object_recognition_info.cpp)
+add_library(${PROJECT_NAME} src/tabletop_detector_class.cpp src/segment_table.cpp src/object_recognition_info.cpp)
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 

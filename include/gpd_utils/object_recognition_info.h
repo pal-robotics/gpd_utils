@@ -2,7 +2,7 @@
 #define OBJECT_RECOGNITION_INFO_H
 
 // PAL headers
-#include <gpd_utils/pcl_filters.hpp>
+#include <pal_pcl/pcl_filters.hpp>
 #include <pal_detection_msgs/RecognizeObjectsAction.h>
 #include <pal_detection_msgs/RecognizedObjectArray.h>
 #include <gpd_utils/object_bounding_box.h>
