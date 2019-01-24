@@ -60,13 +60,6 @@ generate_messages(
    actionlib_msgs sensor_msgs#   geometry_msgs#   visualization_msgs
 )
 
-set(STATES
-  tabletop_segmentation_state
-  tabletop_clustering_state
-  generate_grasping_candidates_state
-  object_cloud_extraction_state
-)
-
 ###################################
 ## catkin specific configuration ##
 ###################################
@@ -97,7 +90,15 @@ include_directories(
 )
 
 ## Declare a C++ library
-add_library(${PROJECT_NAME} src/tabletop_detector_class.cpp src/segment_table.cpp src/object_recognition_info.cpp)
+
+add_library(${PROJECT_NAME} src/states/tabletop_segmentation_state.cpp
+    src/states/tabletop_clustering_state.cpp
+    src/states/generate_grasping_candidates_state.cpp
+    src/states/object_cloud_extraction_state.cpp
+    src/tabletop_detector_class.cpp
+    src/segment_table.cpp
+    src/object_recognition_info.cpp
+)
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
@@ -114,17 +115,12 @@ target_link_libraries(pal_grasp_detection_node  ${catkin_LIBRARIES} ${GENERATOR_
 target_link_libraries(pal_grasp_generation_server  ${catkin_LIBRARIES} ${GENERATOR_LIB})
 target_link_libraries(pal_grasp_generation_client  ${catkin_LIBRARIES} ${GENERATOR_LIB})
 
-foreach(state ${STATES})
-    add_library(${state} src/states/${state}.cpp)
-    add_dependencies(${state} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-    target_link_libraries(${state} ${catkin_LIBRARIES} ${PROJECT_NAME})
-endforeach()
-
 add_executable(segment_table_node src/segment_table_node.cpp)
 target_link_libraries(segment_table_node ${PROJECT_NAME} ${catkin_LIBRARIES})
+add_dependencies(segment_table_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 add_executable(state_machine_node src/state_machine_node.cpp)
-target_link_libraries(state_machine_node ${PROJECT_NAME} ${catkin_LIBRARIES} ${STATES})
+target_link_libraries(state_machine_node ${PROJECT_NAME} ${catkin_LIBRARIES})
 add_dependencies(state_machine_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 #############
@@ -133,6 +129,10 @@ add_dependencies(state_machine_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin
 
 install(DIRECTORY launch
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
+
+install(TARGETS ${PROJECT_NAME}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 )
 
 install(TARGETS pal_grasp_detection_node pal_grasp_generation_server pal_grasp_generation_client
