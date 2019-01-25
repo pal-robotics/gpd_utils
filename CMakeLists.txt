@@ -119,9 +119,13 @@ add_executable(segment_table_node src/segment_table_node.cpp)
 target_link_libraries(segment_table_node ${PROJECT_NAME} ${catkin_LIBRARIES})
 add_dependencies(segment_table_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-add_executable(state_machine_node src/state_machine_node.cpp)
-target_link_libraries(state_machine_node ${PROJECT_NAME} ${catkin_LIBRARIES})
-add_dependencies(state_machine_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_executable(tabletop_cloud_candidates_sm src/tabletop_cloud_candidates_sm.cpp)
+target_link_libraries(tabletop_cloud_candidates_sm ${PROJECT_NAME} ${catkin_LIBRARIES})
+add_dependencies(tabletop_cloud_candidates_sm ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+add_executable(object_cloud_candidates_sm src/object_cloud_candidates_sm.cpp)
+target_link_libraries(object_cloud_candidates_sm ${PROJECT_NAME} ${catkin_LIBRARIES})
+add_dependencies(object_cloud_candidates_sm ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 #############
 ## Install ##
@@ -141,7 +145,7 @@ install(TARGETS pal_grasp_detection_node pal_grasp_generation_server pal_grasp_g
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-install(TARGETS segment_table_node state_machine_node
+install(TARGETS segment_table_node tabletop_cloud_candidates_sm object_cloud_candidates_sm
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

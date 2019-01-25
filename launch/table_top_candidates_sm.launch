@@ -7,7 +7,7 @@
   <arg name="show_rviz"                 default="false"                            />
 
   <rosparam command="load" file="$(find gpd_utils)/config/planar_segmentation.yaml"/>
-  <node name="segment_table" pkg="gpd_utils" type="state_machine_node" output="screen">
+  <node name="object_candidates_sm" pkg="gpd_utils" type="tabletop_cloud_candidates_sm" output="screen">
     <remap from="cloud_topic"                     to="$(arg cloud_topic)"     />
     <remap from="image_topic"                     to="$(arg image_topic)"     />
   </node>

@@ -1,18 +1,14 @@
 #include <gpd_utils/states/tabletop_segmentation_state.h>
 #include <gpd_utils/states/tabletop_clustering_state.h>
 #include <gpd_utils/states/generate_grasping_candidates_state.h>
-#include <gpd_utils/tabletop_detector_class.h>
-#include <gpd_utils/states/object_cloud_extraction_state.h>
 #include <smach_c/state_machine_with_introspection.h>
 #include <geometry_msgs/PoseArray.h>
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "segment_table");
+  ros::init(argc, argv, "table_top_grasping_candidates_node");
 
   ros::NodeHandle nh, pnh("~");
-
-  //  pal::TableTopDetector<pcl::PointXYZRGB > TTD_(nh);
 
   ros::Publisher clustered_cloud_pub_ =
       nh.advertise<pcl::PointCloud<pcl::PointXYZRGB> >("clustered_cloud", 1, true);
@@ -53,16 +49,6 @@ int main(int argc, char **argv)
             { "~image_scene", "image_scene" },
             { "~original_cloud", "original_cloud" } });
 
-//  sm->add("Object Cloud Extraction", smach_c::StatePtr(new pal::ObjectCloudExtractionState(nh)),
-//          { { smach_c::PREEMPTED, "TASK_PREEMPTED" },
-//            { smach_c::SUCCESS, "Grasp Candidates" },
-//            { smach_c::FAILURE, "TASK_INCOMPLETE" } },
-//          { { "~object_cloud", "object_cloud" },
-//            { "~desired_object", "desired_object" },
-//            { "~tabletop_cloud", "tabletop_cloud" },
-//            { "~image_scene", "image_scene" },
-//            { "~original_cloud", "original_cloud" } });
-
   sm->add("Grasp Candidates", smach_c::StatePtr(new pal::GenerateGraspingCandidatesState(nh)),
           { { smach_c::PREEMPTED, "TASK_PREEMPTED" },
             { smach_c::SUCCESS, "TASK_COMPLETE" },
@@ -83,10 +69,6 @@ int main(int argc, char **argv)
   for (auto grasp : grasp_cand)
     grasp_candidates_pose_.poses.push_back(grasp.pose);
 
-  //  ROS_INFO_STREAM("Cloud is of size : "<<
-  //  tabletop_cloud->height*tabletop_cloud->width);
-  //  clustered_cloud.reset(new pcl::PointCloud<pcl::PointXYZRGB>);
-  //  TTD_.extractOneCluster(tabletop_cloud, clustered_cloud);
   ROS_INFO_STREAM("Clustered Cloud is of size : " << clustered_cloud->height *
                                                          clustered_cloud->width);
   clustered_cloud_pub_.publish(*clustered_cloud);
