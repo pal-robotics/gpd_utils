@@ -30,6 +30,16 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   visualization_msgs
   gpd
+  pal_detection_msgs
+  message_generation
+  smach_c
+  smach_c_pal_states
+  smach_c_ros_states
+  std_msgs
+  tf
+  message_filters
+  pal_ariles
+  pal_pcl
 )
 
 ## System dependencies are found with CMake's conventions
@@ -61,8 +71,8 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES gpd_utils
-  CATKIN_DEPENDS actionlib actionlib_msgs geometry_msgs gpd pcl_conversions pcl_ros roscpp sensor_msgs visualization_msgs
+  LIBRARIES ${STATES}
+  CATKIN_DEPENDS actionlib actionlib_msgs geometry_msgs gpd pcl_conversions pcl_ros roscpp sensor_msgs visualization_msgs smach_c smach_c_pal_states smach_c_ros_states std_msgs tf message_filters pal_ariles pal_pcl
   DEPENDS system_lib Eigen PCL
 )
 
@@ -79,6 +89,19 @@ include_directories(
   ${GENERATOR_LIB_INCLUDE_DIR}
 )
 
+## Declare a C++ library
+
+add_library(${PROJECT_NAME} src/states/tabletop_segmentation_state.cpp
+    src/states/tabletop_clustering_state.cpp
+    src/states/generate_grasping_candidates_state.cpp
+    src/states/object_cloud_extraction_state.cpp
+    src/tabletop_detector_class.cpp
+    src/segment_table.cpp
+    src/object_recognition_info.cpp
+)
+add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
+
 add_executable(pal_grasp_detection_node src/pal_grasp_detection_node.cpp)
 add_executable(pal_grasp_generation_server src/pal_grasp_generation_server.cpp)
 add_executable(pal_grasp_generation_client src/pal_grasp_generation_client.cpp)
@@ -92,6 +115,18 @@ target_link_libraries(pal_grasp_detection_node  ${catkin_LIBRARIES} ${GENERATOR_
 target_link_libraries(pal_grasp_generation_server  ${catkin_LIBRARIES} ${GENERATOR_LIB})
 target_link_libraries(pal_grasp_generation_client  ${catkin_LIBRARIES} ${GENERATOR_LIB})
 
+add_executable(segment_table_node src/segment_table_node.cpp)
+target_link_libraries(segment_table_node ${PROJECT_NAME} ${catkin_LIBRARIES})
+add_dependencies(segment_table_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+add_executable(tabletop_cloud_candidates_sm src/tabletop_cloud_candidates_sm.cpp)
+target_link_libraries(tabletop_cloud_candidates_sm ${PROJECT_NAME} ${catkin_LIBRARIES})
+add_dependencies(tabletop_cloud_candidates_sm ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+add_executable(object_cloud_candidates_sm src/object_cloud_candidates_sm.cpp)
+target_link_libraries(object_cloud_candidates_sm ${PROJECT_NAME} ${catkin_LIBRARIES})
+add_dependencies(object_cloud_candidates_sm ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
 #############
 ## Install ##
 #############
@@ -100,7 +135,17 @@ install(DIRECTORY launch
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
+install(TARGETS ${PROJECT_NAME}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+)
+
 install(TARGETS pal_grasp_detection_node pal_grasp_generation_server pal_grasp_generation_client
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(TARGETS segment_table_node tabletop_cloud_candidates_sm object_cloud_candidates_sm
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

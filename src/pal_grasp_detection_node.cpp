@@ -57,14 +57,14 @@ PalGraspDetectionNode::PalGraspDetectionNode(ros::NodeHandle& node, std::string 
 
   // subscribe to input point cloud ROS topic
   if (cloud_type == POINT_CLOUD_2)
-    cloud_sub_ = node.subscribe(cloud_topic, 1, &PalGraspDetectionNode::cloud_callback, this);
+    cloud_sub_ = node.subscribe(cloud_topic, 1, &PalGraspDetectionNode::cloudCallback, this);
   else if (cloud_type == CLOUD_INDEXED)
     cloud_sub_ =
-        node.subscribe(cloud_topic, 1, &PalGraspDetectionNode::cloud_indexed_callback, this);
+        node.subscribe(cloud_topic, 1, &PalGraspDetectionNode::cloudIndexedCallback, this);
   else if (cloud_type == CLOUD_SAMPLES)
   {
     cloud_sub_ =
-        node.subscribe(cloud_topic, 1, &PalGraspDetectionNode::cloud_samples_callback, this);
+        node.subscribe(cloud_topic, 1, &PalGraspDetectionNode::cloudSamplesCallback, this);
     //    grasp_detector_->setUseIncomingSamples(true);
     has_samples_ = false;
   }
@@ -73,7 +73,7 @@ PalGraspDetectionNode::PalGraspDetectionNode(ros::NodeHandle& node, std::string 
   if (!samples_topic.empty())
   {
     samples_sub_ =
-        node.subscribe(samples_topic, 1, &PalGraspDetectionNode::samples_callback, this);
+        node.subscribe(samples_topic, 1, &PalGraspDetectionNode::samplesCallback, this);
     has_samples_ = false;
   }
 
@@ -148,7 +148,7 @@ void PalGraspDetectionNode::run()
 }
 
 void PalGraspDetectionNode::convertToGraspPoses(const std::vector<Grasp>& grasps,
-                                                geometry_msgs::PoseArray& grasp_poses)
+                                                geometry_msgs::PoseArray& grasp_poses) const
 {
   grasp_poses.header = cloud_camera_header_;
   geometry_msgs::Pose grasp_pose;
@@ -166,7 +166,7 @@ void PalGraspDetectionNode::convertToGraspPoses(const std::vector<Grasp>& grasps
   }
 }
 
-std::vector<Grasp> PalGraspDetectionNode::detectGraspPosesInTopic()
+std::vector<Grasp> PalGraspDetectionNode::detectGraspPosesInTopic() const
 {
   // detect grasp poses
   std::vector<Grasp> grasps;
@@ -198,7 +198,7 @@ std::vector<Grasp> PalGraspDetectionNode::detectGraspPosesInTopic()
 
 std::vector<int> PalGraspDetectionNode::getSamplesInBall(const PointCloudRGBA::Ptr& cloud,
                                                          const pcl::PointXYZRGBA& centroid,
-                                                         float radius)
+                                                         float radius) const
 {
   std::vector<int> indices;
   std::vector<float> dists;
@@ -209,7 +209,7 @@ std::vector<int> PalGraspDetectionNode::getSamplesInBall(const PointCloudRGBA::P
 }
 
 
-void PalGraspDetectionNode::cloud_callback(const sensor_msgs::PointCloud2ConstPtr& msg)
+void PalGraspDetectionNode::cloudCallback(const sensor_msgs::PointCloud2ConstPtr& msg)
 {
   if (!has_cloud_)
   {
@@ -246,7 +246,7 @@ void PalGraspDetectionNode::cloud_callback(const sensor_msgs::PointCloud2ConstPt
 }
 
 
-void PalGraspDetectionNode::cloud_indexed_callback(const gpd::CloudIndexed& msg)
+void PalGraspDetectionNode::cloudIndexedCallback(const gpd::CloudIndexed& msg)
 {
   if (!has_cloud_)
   {
@@ -269,7 +269,7 @@ void PalGraspDetectionNode::cloud_indexed_callback(const gpd::CloudIndexed& msg)
 }
 
 
-void PalGraspDetectionNode::cloud_samples_callback(const gpd::CloudSamples& msg)
+void PalGraspDetectionNode::cloudSamplesCallback(const gpd::CloudSamples& msg)
 {
   if (!has_cloud_)
   {
@@ -294,7 +294,7 @@ void PalGraspDetectionNode::cloud_samples_callback(const gpd::CloudSamples& msg)
 }
 
 
-void PalGraspDetectionNode::samples_callback(const gpd::SamplesMsg& msg)
+void PalGraspDetectionNode::samplesCallback(const gpd::SamplesMsg& msg)
 {
   if (!has_samples_)
   {
@@ -356,7 +356,7 @@ void PalGraspDetectionNode::initCloudCamera(const gpd::CloudSources& msg)
 }
 
 
-gpd::GraspConfigList PalGraspDetectionNode::createGraspListMsg(const std::vector<Grasp>& hands)
+gpd::GraspConfigList PalGraspDetectionNode::createGraspListMsg(const std::vector<Grasp>& hands) const
 {
   gpd::GraspConfigList msg;
 
@@ -369,7 +369,7 @@ gpd::GraspConfigList PalGraspDetectionNode::createGraspListMsg(const std::vector
 }
 
 
-gpd::GraspConfig PalGraspDetectionNode::convertToGraspMsg(const Grasp& hand)
+gpd::GraspConfig PalGraspDetectionNode::convertToGraspMsg(const Grasp& hand) const
 {
   gpd::GraspConfig msg;
   tf::pointEigenToMsg(hand.getGraspBottom(), msg.bottom);

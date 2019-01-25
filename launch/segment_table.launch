@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="cloud_topic"                     default="/xtion/depth_registered/points"  />
+  <arg name="image_topic"                     default="/xtion/rgb/image_raw/compressed"  />
+  <!--arg name="cloud"                     default="/throttle_filtering_points/filtered_points"  /-->
+  <arg name="show_rviz"                 default="false"                            />
+
+  <rosparam command="load" file="$(find gpd_utils)/config/planar_segmentation.yaml"/>
+  <node name="segment_table" pkg="gpd_utils" type="segment_table_node" output="screen">
+    <remap from="cloud_topic"                     to="$(arg cloud_topic)"     />
+    <remap from="image_topic"                     to="$(arg image_topic)"     />
+  </node>
+
+  <group if="$(arg show_rviz)">
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find gpd_utils)/config/pcl_segment_table.rviz"/>
+  </group>
+
+</launch>

@@ -53,7 +53,7 @@ PalGraspGenerationServer::PalGraspGenerationServer(ros::NodeHandle& node)
   if (!samples_topic.empty())
   {
     samples_sub_ =
-        nh_.subscribe(samples_topic, 1, &PalGraspGenerationServer::samples_callback, this);
+        nh_.subscribe(samples_topic, 1, &PalGraspGenerationServer::samplesCallback, this);
     has_samples_ = false;
   }
 
@@ -70,7 +70,7 @@ PalGraspGenerationServer::PalGraspGenerationServer(ros::NodeHandle& node)
 }
 
 void PalGraspGenerationServer::convertToGraspPoses(const std::vector<Grasp>& grasps,
-                                                   geometry_msgs::PoseArray& grasp_poses)
+                                                   geometry_msgs::PoseArray& grasp_poses) const
 {
   grasp_poses.header = cloud_camera_header_;
   geometry_msgs::Pose grasp_pose;
@@ -89,7 +89,7 @@ void PalGraspGenerationServer::convertToGraspPoses(const std::vector<Grasp>& gra
 }
 
 void PalGraspGenerationServer::convertToGraspCandidates(
-    const std::vector<Grasp>& grasps, std::vector<geometry_msgs::PoseStamped>& grasp_cand)
+    const std::vector<Grasp>& grasps, std::vector<geometry_msgs::PoseStamped>& grasp_cand) const
 {
   geometry_msgs::PoseStamped grasp_pose;
   grasp_pose.header = cloud_camera_header_;
@@ -107,7 +107,7 @@ void PalGraspGenerationServer::convertToGraspCandidates(
   }
 }
 
-std::vector<Grasp> PalGraspGenerationServer::detectGraspPosesInPointCloud()
+std::vector<Grasp> PalGraspGenerationServer::detectGraspPosesInPointCloud() const
 {
   // detect grasp poses
   std::vector<Grasp> grasps;
@@ -129,7 +129,7 @@ std::vector<Grasp> PalGraspGenerationServer::detectGraspPosesInPointCloud()
   }
 
   // Publish the selected grasps.
-  gpd::GraspConfigList selected_grasps_msg = createGraspListMsg(grasps);
+  gpd::GraspConfigList selected_grasps_msg = this->createGraspListMsg(grasps);
   grasps_pub_.publish(selected_grasps_msg);
   ROS_INFO_STREAM("Published " << selected_grasps_msg.grasps.size() << " highest-scoring grasps.");
 
@@ -138,7 +138,7 @@ std::vector<Grasp> PalGraspGenerationServer::detectGraspPosesInPointCloud()
 
 std::vector<int> PalGraspGenerationServer::getSamplesInBall(const PointCloudRGBA::Ptr& cloud,
                                                             const pcl::PointXYZRGBA& centroid,
-                                                            float radius)
+                                                            float radius) const
 {
   std::vector<int> indices;
   std::vector<float> dists;
@@ -193,7 +193,7 @@ void PalGraspGenerationServer::generateCandidates(const gpd_utils::GraspCandidat
   }
 }
 
-void PalGraspGenerationServer::samples_callback(const gpd::SamplesMsg& msg)
+void PalGraspGenerationServer::samplesCallback(const gpd::SamplesMsg& msg)
 {
   if (!has_samples_)
   {
@@ -255,7 +255,7 @@ void PalGraspGenerationServer::initCloudCamera(const gpd::CloudSources& msg)
 }
 
 
-gpd::GraspConfigList PalGraspGenerationServer::createGraspListMsg(const std::vector<Grasp>& hands)
+gpd::GraspConfigList PalGraspGenerationServer::createGraspListMsg(const std::vector<Grasp>& hands) const
 {
   gpd::GraspConfigList msg;
 
@@ -268,7 +268,7 @@ gpd::GraspConfigList PalGraspGenerationServer::createGraspListMsg(const std::vec
 }
 
 
-gpd::GraspConfig PalGraspGenerationServer::convertToGraspMsg(const Grasp& hand)
+gpd::GraspConfig PalGraspGenerationServer::convertToGraspMsg(const Grasp& hand) const
 {
   gpd::GraspConfig msg;
   tf::pointEigenToMsg(hand.getGraspBottom(), msg.bottom);
