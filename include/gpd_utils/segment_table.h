@@ -13,7 +13,8 @@
 #include <tf/transform_listener.h>
 #include <sensor_msgs/CompressedImage.h>
 #include <message_filters/subscriber.h>
-#include <message_filters/time_synchronizer.h>
+#include <message_filters/synchronizer.h>
+#include <message_filters/sync_policies/approximate_time.h>
 
 // PCL headers
 #include <pcl/point_cloud.h>
@@ -115,8 +116,8 @@ protected:
 
   message_filters::Subscriber<sensor_msgs::PointCloud2> cloud_sub_;
   message_filters::Subscriber<sensor_msgs::CompressedImage> image_sub_;
-  typedef message_filters::TimeSynchronizer<sensor_msgs::PointCloud2, sensor_msgs::CompressedImage> msg_filters_type;
-  boost::scoped_ptr<msg_filters_type> image_cloud_sync_;
+  typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::PointCloud2, sensor_msgs::CompressedImage> msg_filters_policy;
+  boost::scoped_ptr<message_filters::Synchronizer<msg_filters_policy> > image_cloud_sync_;
 
   bool has_cloud_;
   typename pcl::PointCloud<PointT>::Ptr pointcloud_org_;
@@ -154,7 +155,8 @@ PlanarSegmentation<PointT>::PlanarSegmentation(ros::NodeHandle& nh, ros::NodeHan
       _pnh.advertise<typename pcl::PointCloud<PointT> >("tabletop_cloud", 1, true);
   plane_coeff_pub_ = _pnh.advertise<pcl_msgs::ModelCoefficients>("plane_coeff", 1, true);
 
-  image_cloud_sync_.reset(new msg_filters_type(cloud_sub_, image_sub_, 10));
+  image_cloud_sync_.reset(new message_filters::Synchronizer<msg_filters_policy>(
+      msg_filters_policy(10), cloud_sub_, image_sub_));
   image_cloud_sync_->registerCallback(
       boost::bind(&PlanarSegmentation<PointT>::cloudImageCallback, this, _1, _2));
 }
