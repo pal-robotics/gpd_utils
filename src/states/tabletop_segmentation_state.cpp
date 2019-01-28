@@ -43,6 +43,8 @@ std::string TableTopSegmentationState::execute(smach_c::UserData &user_data)
   sensor_msgs::CompressedImagePtr image_org_(new sensor_msgs::CompressedImage);
   pcl::ModelCoefficients::Ptr plane_coeff(new pcl::ModelCoefficients);
   double table_height = segment_plane_.getTableHeight();
+  // added 1 cm offset to the actual table height to prevent close grasps
+  table_height = table_height + 0.01;
 
   segment_plane_.getImage(image_org_);
   segment_plane_.getNonPlaneCloud(nonplane_cloud);
