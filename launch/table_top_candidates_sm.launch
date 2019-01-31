@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
 
-  <arg name="cloud_topic"                     default="/throttle_filtering_points/filtered_points"  />
+  <arg name="cloud_topic"                     default="/xtion/depth_registered/points"  />
   <arg name="image_topic"                     default="/xtion/rgb/image_raw/compressed"  />
   <!--arg name="cloud"                     default="/throttle_filtering_points/filtered_points"  /-->
   <arg name="show_rviz"                 default="false"                            />
