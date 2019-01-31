@@ -65,10 +65,13 @@ int main(int argc, char **argv)
   std::vector<geometry_msgs::PoseStamped> grasp_cand;
   user_data.getPropertyValue("grasp_candidates", grasp_cand);
 
-  geometry_msgs::PoseArray grasp_candidates_pose_;
-  grasp_candidates_pose_.header = grasp_cand.at(0).header;
-  for (auto grasp : grasp_cand)
-    grasp_candidates_pose_.poses.push_back(grasp.pose);
+  geometry_msgs::PoseArray grasp_candidates_pose = geometry_msgs::PoseArray();
+  if (grasp_cand.size() > 0)
+  {
+    grasp_candidates_pose.header = grasp_cand.at(0).header;
+    for (auto grasp : grasp_cand)
+      grasp_candidates_pose.poses.push_back(grasp.pose);
+  }
 
   ROS_INFO_STREAM("Clustered Cloud is of size : " << clustered_cloud->height *
                                                          clustered_cloud->width);
@@ -76,7 +79,7 @@ int main(int argc, char **argv)
   ROS_INFO_STREAM("A total of "
                   << grasp_cand.size()
                   << " grasp candidates has been generated from the clustered cloud");
-  grasp_candidates_pub_.publish(grasp_candidates_pose_);
+  grasp_candidates_pub_.publish(grasp_candidates_pose);
 
   ros::spin();
 }

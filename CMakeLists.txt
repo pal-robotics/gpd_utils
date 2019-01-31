@@ -131,7 +131,7 @@ add_dependencies(object_cloud_candidates_sm ${${PROJECT_NAME}_EXPORTED_TARGETS} 
 ## Install ##
 #############
 
-install(DIRECTORY launch
+install(DIRECTORY launch config
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
