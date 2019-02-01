@@ -157,3 +157,29 @@ install(DIRECTORY include/${PROJECT_NAME}/
   FILES_MATCHING PATTERN "*.h"
   PATTERN ".svn" EXCLUDE)
 
+#############
+##  Tests  ##
+#############
+if(CATKIN_ENABLE_TESTING)
+
+  find_package(rostest REQUIRED)
+  include_directories(SYSTEM ${catkin_INCLUDE_DIRS})
+
+  #### Setup targets to download data files
+  catkin_download_test_data(
+    download_${PROJECT_NAME}_test_files
+    http://mars/test-binaries/${PROJECT_NAME}/test_files.tar.gz
+    DESTINATION ${CMAKE_SOURCE_DIR}/test
+    MD5 596c4f102c5b31822ad1d37e665e618d
+  )
+  add_custom_target(${PROJECT_NAME}_test_files
+    COMMAND "tar" "xfv" "test_files.tar.gz"
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/test
+    DEPENDS download_${PROJECT_NAME}_test_files
+  )
+
+  add_rostest_gtest(gpd_candidates-test test/gpd_candidates_test.test test/gpd_candidates_test.cpp)
+  target_link_libraries(gpd_candidates-test ${catkin_LIBRARIES})
+  add_dependencies(gpd_candidates-test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_test_files)
+
+endif()
