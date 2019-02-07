@@ -56,7 +56,7 @@ TEST(GraspCandidatesEvaluationTest, graspCandidatesTest)
       "/generate_grasp_candidates", true);
   std::vector<std::string> rosbags;
   double table_height = 0.470;
-  ASSERT_TRUE(nh.getParam("rosbag_files", rosbags));
+  ASSERT_TRUE(nh.getParam("object_cloud_rosbag_files", rosbags));
   for (std::string bag : rosbags)
   {
     std::string bag_path = pack_path + "/test/rosbags/" + bag;
@@ -107,6 +107,96 @@ TEST(GraspCandidatesEvaluationTest, graspCandidatesTest)
     }
     EXPECT_GE(result.grasp_candidates.size(), floor(expected_candidates.poses.size() / 3.0));
     // expectPoseEquality(expected_candidates, result.grasp_candidates);
+    expectCandidatesInCloudVicinity(result.grasp_candidates, minPt, maxPt, 0.11);
+  }
+}
+
+TEST(GraspCandidatesEvaluationTest, graspObjectCandidatesTest)
+{
+  ros::NodeHandle nh("~");
+  std::string pack_path = ros::package::getPath("gpd_utils");
+  actionlib::SimpleActionClient<gpd_utils::GraspCandidatesGenerationAction> grasp_generation_client_(
+      "/generate_grasp_candidates", true);
+  std::vector<std::string> rosbags;
+  double table_height = 0.470;
+  ASSERT_TRUE(nh.getParam("original_cloud_rosbag_files", rosbags));
+  for (std::string bag : rosbags)
+  {
+    geometry_msgs::PoseArray expected_candidates = geometry_msgs::PoseArray();
+    sensor_msgs::PointCloud2ConstPtr object_cloud_msg;
+    sensor_msgs::PointCloud2ConstPtr orig_cloud_msg;
+    geometry_msgs::PoseArrayConstPtr candidates_msg;
+
+    std::string bag_path = pack_path + "/test/rosbags/" + bag;
+    SCOPED_TRACE("Bag : " + bag_path);
+    ASSERT_TRUE(boost::filesystem::exists(bag_path)) << bag_path;
+    rosbag::Bag rbag;
+    rbag.open(bag_path, rosbag::bagmode::Read);
+    rosbag::View view(rbag);
+
+    for (rosbag::MessageInstance const &m : view)
+    {
+      if (!candidates_msg.get())
+        candidates_msg = m.instantiate<geometry_msgs::PoseArray>();
+    }
+    std::vector<std::string> cloud_topic{ "/object_cloud" };
+    rosbag::View view_object(rbag, rosbag::TopicQuery(cloud_topic));
+    for (rosbag::MessageInstance const &m : view_object)
+    {
+      if (!object_cloud_msg.get())
+        object_cloud_msg = m.instantiate<sensor_msgs::PointCloud2>();
+    }
+    cloud_topic.clear();
+    cloud_topic.push_back("/original_cloud");
+    rosbag::View view_original(rbag, rosbag::TopicQuery(cloud_topic));
+    for (rosbag::MessageInstance const &m : view_object)
+    {
+      if (!orig_cloud_msg.get())
+        orig_cloud_msg = m.instantiate<sensor_msgs::PointCloud2>();
+    }
+
+    ASSERT_TRUE(object_cloud_msg.get());
+    ASSERT_TRUE(orig_cloud_msg.get());
+
+    ASSERT_TRUE(grasp_generation_client_.waitForServer(ros::Duration(2.0)));
+    ROS_INFO_STREAM("Performing test on the cloud with " << orig_cloud_msg->data.size()
+                                                         << " points");
+    pcl::PointXYZ minPt, maxPt;
+    gpd_utils::GraspCandidatesGenerationGoal goal;
+    if (!object_cloud_msg->data.empty())
+    {
+      pcl::PointCloud<pcl::PointXYZ>::Ptr pointcloud_info(new pcl::PointCloud<pcl::PointXYZ>());
+      ASSERT_TRUE(candidates_msg.get());
+      expected_candidates = *candidates_msg;
+      pcl::fromROSMsg(*object_cloud_msg, *pointcloud_info);
+      for (pcl::PointXYZ point : pointcloud_info->points)
+      {
+        geometry_msgs::Point sample_point;
+        sample_point.x = point.x;
+        sample_point.y = point.y;
+        sample_point.z = point.z;
+        goal.samples.push_back(sample_point);
+      }
+      pcl::getMinMax3D(*pointcloud_info, minPt, maxPt);
+      ASSERT_GT(goal.samples.size(), 0);
+    }
+
+    goal.pointcloud = *object_cloud_msg;
+    goal.table_height = table_height;
+    ROS_INFO_STREAM("Sending goal and waiting for the result");
+    grasp_generation_client_.sendGoalAndWait(goal);
+    gpd_utils::GraspCandidatesGenerationResult result =
+        gpd_utils::GraspCandidatesGenerationResult();
+    result = *grasp_generation_client_.getResult();
+    if (!object_cloud_msg->data.empty())
+    {
+      ASSERT_GT(result.grasp_candidates.size(), 0);
+    }
+    else
+    {
+      ASSERT_TRUE(result.grasp_candidates.empty());
+    }
+    EXPECT_GE(result.grasp_candidates.size(), floor(expected_candidates.poses.size() / 3.0));
     expectCandidatesInCloudVicinity(result.grasp_candidates, minPt, maxPt, 0.11);
   }
 }

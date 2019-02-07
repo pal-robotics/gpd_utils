@@ -100,7 +100,7 @@ add_library(${PROJECT_NAME} src/states/tabletop_segmentation_state.cpp
     src/object_recognition_info.cpp
 )
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${GENERATOR_LIB})
 
 add_executable(pal_grasp_detection_node src/pal_grasp_detection_node.cpp)
 add_executable(pal_grasp_generation_server src/pal_grasp_generation_server.cpp)
@@ -170,7 +170,7 @@ if(CATKIN_ENABLE_TESTING)
     download_${PROJECT_NAME}_test_files
     http://mars/test-binaries/${PROJECT_NAME}/test_files.tar.gz
     DESTINATION ${CMAKE_SOURCE_DIR}/test
-    MD5 596c4f102c5b31822ad1d37e665e618d
+    MD5 aa1e913f433c256eb11e70f729eacfed
   )
   add_custom_target(${PROJECT_NAME}_test_files
     COMMAND "tar" "xfv" "test_files.tar.gz"
