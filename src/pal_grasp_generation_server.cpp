@@ -163,7 +163,22 @@ void PalGraspGenerationServer::generateCandidates(const gpd_utils::GraspCandidat
     ROS_INFO_STREAM("Received cloud with " << cloud_camera_->getCloudProcessed()->size()
                                            << " points.");
 
-    grasp_detector_->setTableHeight(goal->table_height);
+    // A way to set samples at which the gpd looks for the grasp candidates by setting up
+    // the points in the pointcloud where it need to search
+    if (!goal->samples.empty())
+    {
+      Eigen::Matrix3Xd eig_samples(3, goal->samples.size());
+      for (int i = 0; i < goal->samples.size(); i++)
+      {
+        eig_samples.col(i) << goal->samples[i].x, goal->samples[i].y, goal->samples[i].z;
+      }
+      cloud_camera_->setSamples(eig_samples);
+      ROS_INFO_STREAM("Received object samples of " << goal->samples.size());
+      has_samples_ = true;
+    }
+
+    if (goal->table_height != 0.0)
+      grasp_detector_->setTableHeight(goal->table_height);
 
     has_cloud_ = true;
     frame_ = goal->pointcloud.header.frame_id;

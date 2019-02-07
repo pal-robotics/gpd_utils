@@ -1,4 +1,5 @@
 sensor_msgs/PointCloud2 pointcloud
+geometry_msgs/Point[] samples
 float32 table_height
 ---
 geometry_msgs/PoseStamped[] grasp_candidates 
