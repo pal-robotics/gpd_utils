@@ -196,7 +196,7 @@ TEST(GraspCandidatesEvaluationTest, graspObjectCandidatesTest)
     {
       ASSERT_TRUE(result.grasp_candidates.empty());
     }
-    EXPECT_GE(result.grasp_candidates.size(), floor(expected_candidates.poses.size() / 3.0));
+    EXPECT_GE(result.grasp_candidates.size(), floor(expected_candidates.poses.size() / 5.0));
     expectCandidatesInCloudVicinity(result.grasp_candidates, minPt, maxPt, 0.11);
   }
 }
