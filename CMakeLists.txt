@@ -43,7 +43,6 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
 
 find_library(GENERATOR_LIB grasp_candidates_generator)
 find_path(GENERATOR_LIB_INCLUDE_DIR gpg/grasp.h)
@@ -72,8 +71,8 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${STATES}
-  CATKIN_DEPENDS actionlib actionlib_msgs geometry_msgs gpd pcl_conversions pcl_ros roscpp sensor_msgs visualization_msgs smach_c smach_c_pal_states smach_c_ros_states std_msgs tf message_filters pal_ariles pal_pcl
-  DEPENDS system_lib Eigen PCL
+  CATKIN_DEPENDS gpd pcl_conversions smach_c smach_c_pal_states smach_c_ros_states tf message_filters pal_pcl
+# DEPENDS
 )
 
 ###########
