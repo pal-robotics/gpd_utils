@@ -43,7 +43,6 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
 
 find_library(GENERATOR_LIB grasp_candidates_generator)
 find_path(GENERATOR_LIB_INCLUDE_DIR gpg/grasp.h)
@@ -71,9 +70,9 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES ${STATES}
-  CATKIN_DEPENDS actionlib actionlib_msgs geometry_msgs gpd pcl_conversions pcl_ros roscpp sensor_msgs visualization_msgs smach_c smach_c_pal_states smach_c_ros_states std_msgs tf message_filters pal_ariles pal_pcl
-  DEPENDS system_lib Eigen PCL
+  LIBRARIES ${PROJECT_NAME}
+  CATKIN_DEPENDS gpd roscpp pcl_conversions smach_c smach_c_pal_states smach_c_ros_states tf message_filters pal_pcl pal_detection_msgs visualization_msgs pal_ariles actionlib actionlib_msgs sensor_msgs geometry_msgs
+# DEPENDS
 )
 
 ###########
@@ -100,7 +99,7 @@ add_library(${PROJECT_NAME} src/states/tabletop_segmentation_state.cpp
     src/object_recognition_info.cpp
 )
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${GENERATOR_LIB})
 
 add_executable(pal_grasp_detection_node src/pal_grasp_detection_node.cpp)
 add_executable(pal_grasp_generation_server src/pal_grasp_generation_server.cpp)
@@ -131,7 +130,7 @@ add_dependencies(object_cloud_candidates_sm ${${PROJECT_NAME}_EXPORTED_TARGETS} 
 ## Install ##
 #############
 
-install(DIRECTORY launch
+install(DIRECTORY launch config
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
@@ -157,3 +156,29 @@ install(DIRECTORY include/${PROJECT_NAME}/
   FILES_MATCHING PATTERN "*.h"
   PATTERN ".svn" EXCLUDE)
 
+#############
+##  Tests  ##
+#############
+if(CATKIN_ENABLE_TESTING)
+
+  find_package(rostest REQUIRED)
+  include_directories(SYSTEM ${catkin_INCLUDE_DIRS})
+
+  #### Setup targets to download data files
+  catkin_download_test_data(
+    download_${PROJECT_NAME}_test_files
+    http://mars/test-binaries/${PROJECT_NAME}/test_files.tar.gz
+    DESTINATION ${CMAKE_SOURCE_DIR}/test
+    MD5 aa1e913f433c256eb11e70f729eacfed
+  )
+  add_custom_target(${PROJECT_NAME}_test_files
+    COMMAND "tar" "xfv" "test_files.tar.gz"
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/test
+    DEPENDS download_${PROJECT_NAME}_test_files
+  )
+
+  add_rostest_gtest(gpd_candidates-test test/gpd_candidates_test.test test/gpd_candidates_test.cpp)
+  target_link_libraries(gpd_candidates-test ${catkin_LIBRARIES})
+  add_dependencies(gpd_candidates-test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_test_files)
+
+endif()

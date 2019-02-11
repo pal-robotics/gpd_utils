@@ -22,6 +22,7 @@ void PalGraspGenerationClient::run()
     {
       gpd_utils::GraspCandidatesGenerationGoal goal;
       goal.pointcloud = cloud_data_;
+      goal.table_height = 0.0;
       grasp_generation_client_.sendGoalAndWait(goal);
 
       gpd_utils::GraspCandidatesGenerationResult result;

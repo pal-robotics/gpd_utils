@@ -37,16 +37,21 @@ std::string TableTopSegmentationState::execute(smach_c::UserData &user_data)
   }
 
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr original_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr original_cloud_transformed(
+      new pcl::PointCloud<pcl::PointXYZRGB>);
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr tabletop_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr nonplane_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr plane_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
   sensor_msgs::CompressedImagePtr image_org_(new sensor_msgs::CompressedImage);
   pcl::ModelCoefficients::Ptr plane_coeff(new pcl::ModelCoefficients);
   double table_height = segment_plane_.getTableHeight();
+  // added 1 cm offset to the actual table height to prevent close grasps
+  table_height = table_height + 0.01;
 
   segment_plane_.getImage(image_org_);
   segment_plane_.getNonPlaneCloud(nonplane_cloud);
   segment_plane_.getOriginalCloud(original_cloud);
+  segment_plane_.getOriginalTransformedCloud(original_cloud_transformed);
   segment_plane_.getPlaneCloud(plane_cloud);
   segment_plane_.getPlaneCoeff(plane_coeff);
   segment_plane_.getTableTopCloud(tabletop_cloud);
@@ -59,6 +64,7 @@ std::string TableTopSegmentationState::execute(smach_c::UserData &user_data)
   user_data.addOrUpdateProperty("~tabletop_cloud", tabletop_cloud);
   user_data.addOrUpdateProperty("~image_scene", image_org_);
   user_data.addOrUpdateProperty("~original_cloud", original_cloud);
+  user_data.addOrUpdateProperty("~original_cloud_transformed", original_cloud_transformed);
 
   return smach_c::SUCCESS;
 }

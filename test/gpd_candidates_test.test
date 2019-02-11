@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="corridor_width" />
+  <arg name="use_corridor" />
+  <arg name="test_name" value="gpd_candidates_test"/>
+
+  <include file="$(find gpd_utils)/test/gpd_candidates_generation_server.launch"/>
+
+  <test test-name="$(arg test_name)" pkg="gpd_utils" type="gpd_candidates-test" time-limit="240">
+    <rosparam command="load" file="$(find gpd_utils)/test/rosbags_param.yaml" />
+  </test>
+</launch>
+

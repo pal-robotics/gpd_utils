@@ -1,5 +1,15 @@
+# The point cloud input for the grasp detector.
 sensor_msgs/PointCloud2 pointcloud
+
+# The list of sample points at which the detector should search
+# for the grasp candidates. When samples are not set, ideally it
+# looks for grasps all over the point cloud.
+geometry_msgs/Point[] samples
+
+# Height of the table on which the objects are present, when not set
+# uses the default table height set on the launch file.
 float32 table_height
 ---
+# All the generated grasp candidates as an outcome.
 geometry_msgs/PoseStamped[] grasp_candidates 
 ---

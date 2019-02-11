@@ -13,7 +13,8 @@
 #include <tf/transform_listener.h>
 #include <sensor_msgs/CompressedImage.h>
 #include <message_filters/subscriber.h>
-#include <message_filters/time_synchronizer.h>
+#include <message_filters/synchronizer.h>
+#include <message_filters/sync_policies/approximate_time.h>
 
 // PCL headers
 #include <pcl/point_cloud.h>
@@ -68,6 +69,8 @@ public:
 
   void getOriginalCloud(typename pcl::PointCloud<PointT>::Ptr& original_cloud) const;
 
+  void getOriginalTransformedCloud(typename pcl::PointCloud<PointT>::Ptr& original_transformed_cloud) const;
+
   void getImage(sensor_msgs::CompressedImagePtr& image) const;
 
   void getTableTopCloud(typename pcl::PointCloud<PointT>::Ptr& tabletop_cloud) const;
@@ -115,11 +118,12 @@ protected:
 
   message_filters::Subscriber<sensor_msgs::PointCloud2> cloud_sub_;
   message_filters::Subscriber<sensor_msgs::CompressedImage> image_sub_;
-  typedef message_filters::TimeSynchronizer<sensor_msgs::PointCloud2, sensor_msgs::CompressedImage> msg_filters_type;
-  boost::scoped_ptr<msg_filters_type> image_cloud_sync_;
+  typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::PointCloud2, sensor_msgs::CompressedImage> msg_filters_policy;
+  boost::scoped_ptr<message_filters::Synchronizer<msg_filters_policy> > image_cloud_sync_;
 
   bool has_cloud_;
   typename pcl::PointCloud<PointT>::Ptr pointcloud_org_;
+  typename pcl::PointCloud<PointT>::Ptr cloud_org_transformed_;
   typename pcl::PointCloud<PointT>::Ptr pcl_filtered_plane_cloud_;
   typename pcl::PointCloud<PointT>::Ptr pcl_filtered_nonplane_cloud_;
   typename pcl::PointCloud<PointT>::Ptr pcl_filtered_table_top_cloud_;
@@ -154,7 +158,8 @@ PlanarSegmentation<PointT>::PlanarSegmentation(ros::NodeHandle& nh, ros::NodeHan
       _pnh.advertise<typename pcl::PointCloud<PointT> >("tabletop_cloud", 1, true);
   plane_coeff_pub_ = _pnh.advertise<pcl_msgs::ModelCoefficients>("plane_coeff", 1, true);
 
-  image_cloud_sync_.reset(new msg_filters_type(cloud_sub_, image_sub_, 10));
+  image_cloud_sync_.reset(new message_filters::Synchronizer<msg_filters_policy>(
+      msg_filters_policy(10), cloud_sub_, image_sub_));
   image_cloud_sync_->registerCallback(
       boost::bind(&PlanarSegmentation<PointT>::cloudImageCallback, this, _1, _2));
 }
@@ -202,47 +207,46 @@ void PlanarSegmentation<PointT>::getCloudData()
 template <class PointT>
 bool PlanarSegmentation<PointT>::processCloudData()
 {
-  typename pcl::PointCloud<PointT>::Ptr cloudInProcFrame;
-
   // Transform the point cloud to the frame specified if any
   if (!params_.processing_frame_.empty())
   {
-    cloudInProcFrame.reset(new typename pcl::PointCloud<PointT>);
+    cloud_org_transformed_.reset(new typename pcl::PointCloud<PointT>);
     ROS_INFO_STREAM("Transforming point cloud from frame "
                     << pointcloud_org_->header.frame_id << " to frame "
                     << params_.processing_frame_);
     //        bool transform_complete =
     //        pcl_ros::transformPointCloud(params_.processing_frame_,
-    //        *pointcloud_org_, *cloudInProcFrame, _tfListener);
+    //        *pointcloud_org_, *cloud_org_transformed_, _tfListener);
     bool transform_complete = pcl_ros::transformPointCloud(
         params_.processing_frame_, ros::Time(0), *pointcloud_org_,
-        pointcloud_org_->header.frame_id, *cloudInProcFrame, _tfListener);
+        pointcloud_org_->header.frame_id, *cloud_org_transformed_, _tfListener);
     if (!transform_complete)
     {
       this->publishEmptyClouds(pointcloud_org_->header.stamp, params_.processing_frame_);
       return false;
     }
-    cloudInProcFrame->header.frame_id = params_.processing_frame_;
+    cloud_org_transformed_->header.frame_id = params_.processing_frame_;
   }
   else
-    cloudInProcFrame = pointcloud_org_;
-  // cloudInProcFrame = boost::make_shared<typename pcl::PointCloud<PointT>
+    cloud_org_transformed_ = pointcloud_org_;
+  // cloud_org_transformed_ = boost::make_shared<typename pcl::PointCloud<PointT>
   // >(*pointcloud_org_);
-  // cloudInProcFrame.reset(new typename pcl::PointCloud<PointT>(*pointcloud_org_));
+  // cloud_org_transformed_.reset(new typename pcl::PointCloud<PointT>(*pointcloud_org_));
 
   // Apply passthrough filter
   typename pcl::PointCloud<PointT>::Ptr zpassThroughCloud(new typename pcl::PointCloud<PointT>);
   typename pcl::PointCloud<PointT>::Ptr passThroughCloud(new typename pcl::PointCloud<PointT>);
   std::string axis;
   axis = "z";
-  pal::passThrough<PointT>(cloudInProcFrame, axis, params_.passthrough_zmin_,
+  pal::passThrough<PointT>(cloud_org_transformed_, axis, params_.passthrough_zmin_,
                            params_.passthrough_zmax_, zpassThroughCloud);
 
   if (zpassThroughCloud->empty())
   {
     // if all points get removed after the pass-through filtering just return false and
     // stop processing
-    this->publishEmptyClouds(cloudInProcFrame->header.stamp, cloudInProcFrame->header.frame_id);
+    this->publishEmptyClouds(cloud_org_transformed_->header.stamp,
+                             cloud_org_transformed_->header.frame_id);
     return false;
   }
 
@@ -254,7 +258,8 @@ bool PlanarSegmentation<PointT>::processCloudData()
   {
     // if all points get removed after the pass-through filtering just return false and
     // stop processing
-    this->publishEmptyClouds(cloudInProcFrame->header.stamp, cloudInProcFrame->header.frame_id);
+    this->publishEmptyClouds(cloud_org_transformed_->header.stamp,
+                             cloud_org_transformed_->header.frame_id);
     return false;
   }
 
@@ -269,7 +274,8 @@ bool PlanarSegmentation<PointT>::processCloudData()
   {
     ROS_INFO_STREAM("Not able to locate a plane because there are only "
                     << pclDownSampledCloud->points.size() << " points");
-    this->publishEmptyClouds(cloudInProcFrame->header.stamp, cloudInProcFrame->header.frame_id);
+    this->publishEmptyClouds(cloud_org_transformed_->header.stamp,
+                             cloud_org_transformed_->header.frame_id);
     return false;
   }
 
@@ -328,7 +334,7 @@ bool PlanarSegmentation<PointT>::processCloudData()
   }
 
   ROS_INFO_STREAM("Processing:");
-  ROS_INFO_STREAM("\tInput cloud:                 " << cloudInProcFrame->points.size()
+  ROS_INFO_STREAM("\tInput cloud:                 " << cloud_org_transformed_->points.size()
                                                     << " points");
   ROS_INFO_STREAM("\tAfter pass-through:          " << passThroughCloud->points.size()
                                                     << " points");
@@ -350,8 +356,9 @@ bool PlanarSegmentation<PointT>::processCloudData()
   ROS_INFO_STREAM("\tPlane y.                     Min y: " << minPt.y
                                                            << " ,max y: " << maxPt.y);
 
-  publish(pcl_filtered_plane_cloud_, pcl_filtered_nonplane_cloud_, pcl_filtered_table_top_cloud_,
-          plane_coeff_, cloudInProcFrame->header.stamp, cloudInProcFrame->header.frame_id);
+  publish(pcl_filtered_plane_cloud_, pcl_filtered_nonplane_cloud_,
+          pcl_filtered_table_top_cloud_, plane_coeff_,
+          cloud_org_transformed_->header.stamp, cloud_org_transformed_->header.frame_id);
 
   return true;
 }
@@ -430,6 +437,13 @@ template <class PointT>
 void PlanarSegmentation<PointT>::getOriginalCloud(typename pcl::PointCloud<PointT>::Ptr& original_cloud) const
 {
   original_cloud = pointcloud_org_;
+}
+
+template <class PointT>
+void PlanarSegmentation<PointT>::getOriginalTransformedCloud(
+    typename pcl::PointCloud<PointT>::Ptr& original_cloud_transformed) const
+{
+  original_cloud_transformed = cloud_org_transformed_;
 }
 
 template <class PointT>

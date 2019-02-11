@@ -10,9 +10,11 @@ int main(int argc, char **argv)
 
   ros::NodeHandle nh, pnh("~");
 
-  ros::Publisher clustered_cloud_pub_ =
-      nh.advertise<pcl::PointCloud<pcl::PointXYZRGB> >("clustered_cloud", 1, true);
-  ros::Publisher grasp_candidates_pub_ =
+  ros::Publisher object_cloud_pub =
+      nh.advertise<pcl::PointCloud<pcl::PointXYZRGB> >("object_cloud", 1, true);
+  ros::Publisher orig_cloud_pub =
+      nh.advertise<pcl::PointCloud<pcl::PointXYZRGB> >("original_cloud", 1, true);
+  ros::Publisher grasp_candidates_pub =
       nh.advertise<geometry_msgs::PoseArray>("grasp_candiates", 1, true);
 
   pal::PlanarSegmentationParams params;
@@ -38,7 +40,8 @@ int main(int argc, char **argv)
             { "~plane_coeff", "plane_coeff" },
             { "~tabletop_cloud", "tabletop_cloud" },
             { "~image_scene", "image_scene" },
-            { "~original_cloud", "original_cloud" } });
+            { "~original_cloud", "original_cloud" },
+            { "~original_cloud_transformed", "original_cloud_transformed" } });
 
   sm->add("Object Cloud Extraction", smach_c::StatePtr(new pal::ObjectCloudExtractionState(nh)),
           { { smach_c::PREEMPTED, "TASK_PREEMPTED" },
@@ -55,28 +58,34 @@ int main(int argc, char **argv)
             { smach_c::SUCCESS, "TASK_COMPLETE" },
             { smach_c::FAILURE, "TASK_INCOMPLETE" } },
           { { "~object_cloud", "object_cloud" },
+            { "~original_cloud_transformed", "original_cloud_transformed" },
             { "~table_height", "table_height" },
             { "~grasp_candidates", "grasp_candidates" } });
   sm->execute(user_data);
 
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr tabletop_cloud, clustered_cloud;
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr original_cloud, clustered_cloud;
   user_data.getPropertyValue("object_cloud", clustered_cloud);
+  user_data.getPropertyValue("original_cloud_transformed", original_cloud);
 
   std::vector<geometry_msgs::PoseStamped> grasp_cand;
   user_data.getPropertyValue("grasp_candidates", grasp_cand);
 
-  geometry_msgs::PoseArray grasp_candidates_pose_;
-  grasp_candidates_pose_.header = grasp_cand.at(0).header;
-  for (auto grasp : grasp_cand)
-    grasp_candidates_pose_.poses.push_back(grasp.pose);
+  geometry_msgs::PoseArray grasp_candidates_pose = geometry_msgs::PoseArray();
+  if (grasp_cand.size() > 0)
+  {
+    grasp_candidates_pose.header = grasp_cand.at(0).header;
+    for (auto grasp : grasp_cand)
+      grasp_candidates_pose.poses.push_back(grasp.pose);
+  }
 
   ROS_INFO_STREAM("Clustered Cloud is of size : " << clustered_cloud->height *
                                                          clustered_cloud->width);
-  clustered_cloud_pub_.publish(*clustered_cloud);
+  object_cloud_pub.publish(*clustered_cloud);
+  orig_cloud_pub.publish(*original_cloud);
   ROS_INFO_STREAM("A total of "
                   << grasp_cand.size()
                   << " grasp candidates has been generated from the clustered cloud");
-  grasp_candidates_pub_.publish(grasp_candidates_pose_);
+  grasp_candidates_pub.publish(grasp_candidates_pose);
 
   ros::spin();
 }
