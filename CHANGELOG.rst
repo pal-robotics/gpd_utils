@@ -2,8 +2,8 @@
 Changelog for package gpd_utils
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.2 (2019-02-11)
+------------------
 * Merge branch 'minor_fixes' into 'master'
   Minor fixes
   See merge request app-tools/gpd_utils!2
