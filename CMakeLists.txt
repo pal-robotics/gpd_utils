@@ -70,8 +70,8 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES ${STATES}
-  CATKIN_DEPENDS gpd pcl_conversions smach_c smach_c_pal_states smach_c_ros_states tf message_filters pal_pcl
+  LIBRARIES ${PROJECT_NAME}
+  CATKIN_DEPENDS gpd roscpp pcl_conversions smach_c smach_c_pal_states smach_c_ros_states tf message_filters pal_pcl pal_detection_msgs visualization_msgs pal_ariles actionlib actionlib_msgs sensor_msgs geometry_msgs
 # DEPENDS
 )
 
