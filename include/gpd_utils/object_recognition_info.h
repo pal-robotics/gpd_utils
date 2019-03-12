@@ -22,7 +22,7 @@ namespace pal
 class ObjectRecognitionInfo
 {
 public:
-  ObjectRecognitionInfo(ros::NodeHandle &nh);
+  ObjectRecognitionInfo(ros::NodeHandle &nh, const ros::Duration &timeout = ros::Duration(0,0));
 
   virtual ~ObjectRecognitionInfo();
 

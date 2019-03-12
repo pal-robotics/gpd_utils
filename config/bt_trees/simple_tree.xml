@@ -1,0 +1,21 @@
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <Sequence>
+            <RetryUntilSuccesful num_attempts="3">
+                <TableTopSegmentation original_cloud_transformed="{original_cloud_transformed}" plane_cloud="{plane_cloud}" image_scene="{image_scene}" tabletop_cloud="{tabletop_cloud}" nonplane_cloud="{nonplane_cloud}" original_cloud="{original_cloud}" table_height="{table_height}"/>
+            </RetryUntilSuccesful>
+            <Fallback>
+                <ObjectCloudExtraction image_scene="{image_scene}" tabletop_cloud="{tabletop_cloud}" desired_object="{desired_object}" original_cloud="{original_cloud}" object_cloud="{object_cloud}"/>
+                <TableTopClustering tabletop_cloud="{tabletop_cloud}" object_cloud="{object_cloud}"/>
+            </Fallback>
+            <GenerateGraspingCandidates original_cloud_transformed="{original_cloud_transformed}" grasp_candidates="{grasp_candidates}" object_cloud="{object_cloud}" table_height="{table_height}"/>
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Condition ID="foo"/>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
+
