@@ -39,7 +39,9 @@ BT::NodeStatus GenerateGraspingCandidatesAction::tick()
   pcl::toROSMsg(*original_cloud_transformed.value(), goal.pointcloud);
 
   ROS_INFO("Sending the pointcloud to generate the grasping candidates!");
-  ac_->sendGoalAndWait(goal, ros::Duration(25.0));
+  actionlib::SimpleClientGoalState state = ac_->sendGoalAndWait(goal, ros::Duration(25.0));
+  if (state != actionlib::SimpleClientGoalState::SUCCEEDED)
+    return BT::NodeStatus::FAILURE;
 
   gpd_utils::GraspCandidatesGenerationResult result;
   result = *ac_->getResult();

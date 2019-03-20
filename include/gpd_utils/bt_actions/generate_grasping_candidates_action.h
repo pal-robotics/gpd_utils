@@ -26,7 +26,7 @@ public:
         BT::InputPort<double>("table_height", "The height of the table on which the object is present"),
         BT::InputPort<pcl::PointCloud<pcl::PointXYZRGB>::Ptr>(
             "original_cloud_transformed", "Transformed Original Pointcloud Data"),
-        BT::InputPort<pcl::PointCloud<pcl::PointXYZRGB>::Ptr>(
+        BT::OutputPort<std::vector<geometry_msgs::PoseStamped>>(
             "grasp_candidates", "The grasp candidates around the object's cloud") }
     };
 
