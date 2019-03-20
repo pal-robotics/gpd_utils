@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="test_name" value="table_segmentation_test"/>
+
+  <node pkg="tf" type="static_transform_publisher" name="link_broadcaster" args="0.241 0.022 1.165 -1.571 0.000 -2.001 base_footprint xtion_rgb_optical_frame 100" />
+  <rosparam command="load" file="$(find gpd_utils)/config/planar_segmentation.yaml"/>
+  <test test-name="$(arg test_name)" pkg="gpd_utils" type="table_segmentation-test" time-limit="240">
+    <rosparam command="load" file="$(find gpd_utils)/test/rosbags_param.yaml" />
+  </test>
+</launch>
+
