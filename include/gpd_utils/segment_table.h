@@ -67,19 +67,19 @@ public:
 
   bool performTableSegmentation();
 
-  void getOriginalCloud(typename pcl::PointCloud<PointT>::Ptr& original_cloud) const;
+  typename pcl::PointCloud<PointT>::Ptr getOriginalCloud() const;
 
-  void getOriginalTransformedCloud(typename pcl::PointCloud<PointT>::Ptr& original_transformed_cloud) const;
+  typename pcl::PointCloud<PointT>::Ptr getOriginalTransformedCloud() const;
 
-  void getImage(sensor_msgs::CompressedImagePtr& image) const;
+  sensor_msgs::CompressedImagePtr getImage() const;
 
-  void getTableTopCloud(typename pcl::PointCloud<PointT>::Ptr& tabletop_cloud) const;
+  typename pcl::PointCloud<PointT>::Ptr getTableTopCloud() const;
 
-  void getPlaneCloud(typename pcl::PointCloud<PointT>::Ptr& plane_cloud) const;
+  typename pcl::PointCloud<PointT>::Ptr getPlaneCloud() const;
 
-  void getNonPlaneCloud(typename pcl::PointCloud<PointT>::Ptr& nonplane_cloud) const;
+  typename pcl::PointCloud<PointT>::Ptr getNonPlaneCloud() const;
 
-  void getPlaneCoeff(pcl::ModelCoefficients::Ptr& plane_coeff) const;
+  pcl::ModelCoefficients::Ptr getPlaneCoeff() const;
 
   double getTableHeight() const;
 
@@ -404,9 +404,9 @@ void PlanarSegmentation<PointT>::publish(typename pcl::PointCloud<PointT>::Ptr& 
 }
 
 template <class PointT>
-void PlanarSegmentation<PointT>::getImage(sensor_msgs::CompressedImagePtr& image) const
+sensor_msgs::CompressedImagePtr PlanarSegmentation<PointT>::getImage() const
 {
-  image = image_org_;
+  return image_org_;
 }
 
 template <class PointT>
@@ -416,40 +416,39 @@ double PlanarSegmentation<PointT>::getTableHeight() const
 }
 
 template <class PointT>
-void PlanarSegmentation<PointT>::getNonPlaneCloud(typename pcl::PointCloud<PointT>::Ptr& nonplane_cloud) const
+typename pcl::PointCloud<PointT>::Ptr PlanarSegmentation<PointT>::getNonPlaneCloud() const
 {
-  nonplane_cloud = pcl_filtered_nonplane_cloud_;
+  return pcl_filtered_nonplane_cloud_;
 }
 
 template <class PointT>
-void PlanarSegmentation<PointT>::getPlaneCloud(typename pcl::PointCloud<PointT>::Ptr& plane_cloud) const
+typename pcl::PointCloud<PointT>::Ptr PlanarSegmentation<PointT>::getPlaneCloud() const
 {
-  plane_cloud = pcl_filtered_plane_cloud_;
+  return pcl_filtered_plane_cloud_;
 }
 
 template <class PointT>
-void PlanarSegmentation<PointT>::getTableTopCloud(typename pcl::PointCloud<PointT>::Ptr& tabletop_cloud) const
+typename pcl::PointCloud<PointT>::Ptr PlanarSegmentation<PointT>::getTableTopCloud() const
 {
-  tabletop_cloud = pcl_filtered_table_top_cloud_;
+  return pcl_filtered_table_top_cloud_;
 }
 
 template <class PointT>
-void PlanarSegmentation<PointT>::getOriginalCloud(typename pcl::PointCloud<PointT>::Ptr& original_cloud) const
+typename pcl::PointCloud<PointT>::Ptr PlanarSegmentation<PointT>::getOriginalCloud() const
 {
-  original_cloud = pointcloud_org_;
+  return pointcloud_org_;
 }
 
 template <class PointT>
-void PlanarSegmentation<PointT>::getOriginalTransformedCloud(
-    typename pcl::PointCloud<PointT>::Ptr& original_cloud_transformed) const
+typename pcl::PointCloud<PointT>::Ptr PlanarSegmentation<PointT>::getOriginalTransformedCloud() const
 {
-  original_cloud_transformed = cloud_org_transformed_;
+  return cloud_org_transformed_;
 }
 
 template <class PointT>
-void PlanarSegmentation<PointT>::getPlaneCoeff(pcl::ModelCoefficients::Ptr& plane_coeff) const
+pcl::ModelCoefficients::Ptr PlanarSegmentation<PointT>::getPlaneCoeff() const
 {
-  plane_coeff = plane_coeff_;
+  return plane_coeff_;
 }
 }
 
