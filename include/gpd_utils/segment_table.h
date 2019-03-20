@@ -83,6 +83,9 @@ public:
 
   double getTableHeight() const;
 
+  void setCloudAndImageScene(const sensor_msgs::PointCloud2ConstPtr& cloud,
+                             const sensor_msgs::CompressedImageConstPtr& image);
+
 protected:
   void cloudImageCallback(const sensor_msgs::PointCloud2ConstPtr& cloud,
                           const sensor_msgs::CompressedImageConstPtr& image);
@@ -181,7 +184,8 @@ void PlanarSegmentation<PointT>::publishEmptyClouds(pcl::uint64_t& stamp,
 template <class PointT>
 bool PlanarSegmentation<PointT>::performTableSegmentation()
 {
-  this->getCloudData();
+  if (!has_cloud_)
+    this->getCloudData();
   return this->processCloudData();
 }
 
@@ -364,8 +368,8 @@ bool PlanarSegmentation<PointT>::processCloudData()
 }
 
 template <class PointT>
-void PlanarSegmentation<PointT>::cloudImageCallback(const sensor_msgs::PointCloud2ConstPtr& cloud,
-                                                    const sensor_msgs::CompressedImageConstPtr& image)
+void PlanarSegmentation<PointT>::setCloudAndImageScene(const sensor_msgs::PointCloud2ConstPtr& cloud,
+                                                       const sensor_msgs::CompressedImageConstPtr& image)
 {
   if (((cloud->width * cloud->height) == 0) || (image->data.size() == 0))
   {
@@ -376,6 +380,13 @@ void PlanarSegmentation<PointT>::cloudImageCallback(const sensor_msgs::PointClou
   pcl::fromROSMsg(*cloud, *pointcloud_org_);
   image_org_ = boost::make_shared<sensor_msgs::CompressedImage>(*image);
   has_cloud_ = true;
+}
+
+template <class PointT>
+void PlanarSegmentation<PointT>::cloudImageCallback(const sensor_msgs::PointCloud2ConstPtr& cloud,
+                                                    const sensor_msgs::CompressedImageConstPtr& image)
+{
+  this->setCloudAndImageScene(cloud, image);
 }
 
 template <class PointT>
