@@ -1,0 +1,26 @@
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <Sequence>
+            <RetryUntilSuccesful num_attempts="3">
+                <TableTopSegmentation original_cloud="{original_cloud}" image_scene="{image_scene}" table_height="{table_height}" original_cloud_transformed="{original_cloud_transformed}" tabletop_cloud="{tabletop_cloud}" plane_cloud="{plane_cloud}" nonplane_cloud="{nonplane_cloud}"/>
+            </RetryUntilSuccesful>
+            <ConditionalSequence condition="False">
+                <Decorator entry="{desired_object}" ID="BlackboardEntryCheck" name="DesiredObjectEntryCheck">
+                    <ObjectCloudExtraction original_cloud="{original_cloud}" image_scene="{image_scene}" object_cloud="{object_cloud}" tabletop_cloud="{tabletop_cloud}" desired_object="{desired_object}"/>
+                </Decorator>
+                <TableTopClustering object_cloud="{object_cloud}" tabletop_cloud="{tabletop_cloud}"/>
+            </ConditionalSequence>
+            <GenerateGraspingCandidates object_cloud="{object_cloud}" table_height="{table_height}" grasp_candidates="{grasp_candidates}" original_cloud_transformed="{original_cloud_transformed}"/>
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Decorator ID="BlackboardEntryCheck">
+            <input_port name="entry"/>
+        </Decorator>
+        <Condition ID="foo"/>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
+

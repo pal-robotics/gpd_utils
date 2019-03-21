@@ -2,7 +2,7 @@
 
 using namespace pal;
 
-ObjectRecognitionInfo::ObjectRecognitionInfo(ros::NodeHandle &nh)
+ObjectRecognitionInfo::ObjectRecognitionInfo(ros::NodeHandle &nh, const ros::Duration &timeout)
   : nh_(nh)
   , ac_("/inference_server", true)
   , desired_object_()
@@ -17,8 +17,12 @@ ObjectRecognitionInfo::ObjectRecognitionInfo(ros::NodeHandle &nh)
   ROS_INFO("The bounding box padding is set to %d pixels", bb_padding_);
 
   ROS_INFO("Waiting for object recognition action server to start.");
-  ac_.waitForServer();  // will wait for infinite time
-  ROS_INFO("Object recognition action server started!!!");
+  if (!ac_.waitForServer(timeout))  // will wait for infinite time
+  {
+    ROS_WARN_STREAM("The object recognition server not found!");
+  }
+  else
+    ROS_INFO("Object recognition action server started!!!");
 }
 
 ObjectRecognitionInfo::~ObjectRecognitionInfo()

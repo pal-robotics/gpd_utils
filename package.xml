@@ -49,6 +49,7 @@
   <!-- Use doc_depend for packages you need only for building documentation: -->
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
+  <depend>behaviortree_cpp_v3</depend>
   <build_depend>actionlib</build_depend>
   <build_depend>actionlib_msgs</build_depend>
   <build_depend>geometry_msgs</build_depend>
@@ -67,6 +68,7 @@
   <build_depend>message_filters</build_depend>
   <build_depend>pal_ariles</build_depend>
   <build_depend>pal_pcl</build_depend>
+  <build_depend>behaviortree_ros_actions</build_depend>
 
   <build_export_depend>gpd</build_export_depend>
   <build_export_depend>pcl_conversions</build_export_depend>
@@ -77,6 +79,7 @@
   <build_export_depend>tf</build_export_depend>
   <build_export_depend>message_filters</build_export_depend>
   <build_export_depend>pal_pcl</build_export_depend>
+  <build_export_depend>behaviortree_ros_actions</build_export_depend>
 
   <exec_depend>actionlib</exec_depend>
   <exec_depend>actionlib_msgs</exec_depend>
@@ -94,10 +97,11 @@
   <exec_depend>smach_c_ros_states</exec_depend>
   <exec_depend>tf</exec_depend>
   <exec_depend>pal_ariles</exec_depend>
+  <exec_depend>behaviortree_ros_actions</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->
-
+    <behaviortree_cpp_v3 bt_lib_plugin="libgpd_utils" />
   </export>
 </package>

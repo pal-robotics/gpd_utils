@@ -40,6 +40,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_filters
   pal_ariles
   pal_pcl
+  behaviortree_ros_actions
 )
 
 ## System dependencies are found with CMake's conventions
@@ -97,6 +98,11 @@ add_library(${PROJECT_NAME} src/states/tabletop_segmentation_state.cpp
     src/tabletop_detector_class.cpp
     src/segment_table.cpp
     src/object_recognition_info.cpp
+    src/bt_actions/tabletop_segmentation_action.cpp
+    src/bt_actions/tabletop_clustering_action.cpp
+    src/bt_actions/object_cloud_extraction_action.cpp
+    src/bt_actions/generate_grasping_candidates_action.cpp
+    src/behaviortree_register_gpd_utils_plugins.cpp
 )
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${GENERATOR_LIB})
@@ -126,6 +132,10 @@ add_executable(object_cloud_candidates_sm src/object_cloud_candidates_sm.cpp)
 target_link_libraries(object_cloud_candidates_sm ${PROJECT_NAME} ${catkin_LIBRARIES})
 add_dependencies(object_cloud_candidates_sm ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
+add_executable(grasp_cand_gen_bt_node src/grasp_cand_gen_bt_node.cpp)
+target_link_libraries(grasp_cand_gen_bt_node ${PROJECT_NAME} ${catkin_LIBRARIES})
+add_dependencies(grasp_cand_gen_bt_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
 #############
 ## Install ##
 #############
@@ -144,7 +154,7 @@ install(TARGETS pal_grasp_detection_node pal_grasp_generation_server pal_grasp_g
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-install(TARGETS segment_table_node tabletop_cloud_candidates_sm object_cloud_candidates_sm
+install(TARGETS segment_table_node tabletop_cloud_candidates_sm object_cloud_candidates_sm grasp_cand_gen_bt_node
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -169,7 +179,7 @@ if(CATKIN_ENABLE_TESTING)
     download_${PROJECT_NAME}_test_files
     http://mars/test-binaries/${PROJECT_NAME}/test_files.tar.gz
     DESTINATION ${CMAKE_SOURCE_DIR}/test
-    MD5 aa1e913f433c256eb11e70f729eacfed
+    MD5 f76e62444d707129793c3493c0b194fa
   )
   add_custom_target(${PROJECT_NAME}_test_files
     COMMAND "tar" "xfv" "test_files.tar.gz"
@@ -180,5 +190,9 @@ if(CATKIN_ENABLE_TESTING)
   add_rostest_gtest(gpd_candidates-test test/gpd_candidates_test.test test/gpd_candidates_test.cpp)
   target_link_libraries(gpd_candidates-test ${catkin_LIBRARIES})
   add_dependencies(gpd_candidates-test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_test_files)
+
+  add_rostest_gtest(table_segmentation-test test/table_segmentation_test.test test/table_segmentation_test.cpp)
+  target_link_libraries(table_segmentation-test ${catkin_LIBRARIES})
+  add_dependencies(table_segmentation-test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_test_files)
 
 endif()
