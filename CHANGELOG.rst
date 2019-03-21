@@ -2,6 +2,19 @@
 Changelog for package gpd_utils
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge branch 'bt-migration' into 'master'
+  behaviour tree migration initial commit
+  See merge request app-tools/gpd_utils!3
+* added tabletop segmentation and clustering test
+* added setCloudAndImageScene method in segment table
+* modified the return types of the segment table library
+* fixing the grasp candidates bt port and minor fixes
+* added blackboard entry check  and conditional sequence in the tree
+* behaviour tree migration initial commit
+* Contributors: Sai Kishor Kothakota, Victor Lopez
+
 0.0.2 (2019-02-11)
 ------------------
 * Merge branch 'minor_fixes' into 'master'
