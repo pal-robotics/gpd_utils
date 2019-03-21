@@ -2,8 +2,8 @@
 Changelog for package gpd_utils
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.3 (2019-03-21)
+------------------
 * Merge branch 'bt-migration' into 'master'
   behaviour tree migration initial commit
   See merge request app-tools/gpd_utils!3
