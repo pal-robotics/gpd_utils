@@ -31,6 +31,9 @@ TEST(GraspCandidatesEvaluationTest, graspCandidatesTest)
   params.readConfig<ariles::ros>(nh, "/PlanarSegmentationParams");
   PlanarSegmentation<pcl::PointXYZRGB> segment_plane(nh, pnh, params);
   pal::TableTopDetector<pcl::PointXYZRGB> TTD(nh);
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr object_cloud;
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr empty_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+  ASSERT_FALSE(TTD.extractOneCluster(empty_cloud, object_cloud));
   for (auto it = rosbags_param.begin(); it != rosbags_param.end(); it++)
   {
     std::string bag_path = pack_path + "/test/segmentation_bags/" + it->first;
@@ -39,7 +42,6 @@ TEST(GraspCandidatesEvaluationTest, graspCandidatesTest)
     rosbag::Bag rbag;
     rbag.open(bag_path, rosbag::bagmode::Read);
     rosbag::View view(rbag);
-
     sensor_msgs::PointCloud2ConstPtr cloud_msg;
     sensor_msgs::CompressedImageConstPtr image_msg;
     for (rosbag::MessageInstance const &m : view)
@@ -61,8 +63,8 @@ TEST(GraspCandidatesEvaluationTest, graspCandidatesTest)
     ASSERT_TRUE(segment_plane.performTableSegmentation());
     ASSERT_GT(segment_plane.getTableTopCloud()->size(), 0);
     EXPECT_NEAR(segment_plane.getTableHeight(), it->second, 0.02);
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr object_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-    TTD.extractOneCluster(segment_plane.getTableTopCloud(), object_cloud);
+    object_cloud.reset(new pcl::PointCloud<pcl::PointXYZRGB>());
+    ASSERT_TRUE(TTD.extractOneCluster(segment_plane.getTableTopCloud(), object_cloud));
     EXPECT_NEAR(object_cloud->size(), cluster_info_param.at(it->first), 1000);
   }
 }
