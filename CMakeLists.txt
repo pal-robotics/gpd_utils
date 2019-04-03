@@ -108,16 +108,13 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE  BT_PLUGIN_EXPORT)
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${GENERATOR_LIB} ${PCL_LIBRARIES})
 
-add_executable(pal_grasp_detection_node src/pal_grasp_detection_node.cpp)
 add_executable(pal_grasp_generation_server src/pal_grasp_generation_server.cpp)
 add_executable(pal_grasp_generation_client src/pal_grasp_generation_client.cpp)
 
-add_dependencies(pal_grasp_detection_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(pal_grasp_generation_server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(pal_grasp_generation_client ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(pal_grasp_detection_node  ${catkin_LIBRARIES} ${GENERATOR_LIB})
 target_link_libraries(pal_grasp_generation_server  ${catkin_LIBRARIES} ${GENERATOR_LIB})
 target_link_libraries(pal_grasp_generation_client  ${catkin_LIBRARIES} ${GENERATOR_LIB})
 
@@ -149,7 +146,7 @@ install(TARGETS ${PROJECT_NAME}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 )
 
-install(TARGETS pal_grasp_detection_node pal_grasp_generation_server pal_grasp_generation_client
+install(TARGETS pal_grasp_generation_server pal_grasp_generation_client
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
