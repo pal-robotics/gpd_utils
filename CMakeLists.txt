@@ -104,6 +104,7 @@ add_library(${PROJECT_NAME} src/states/tabletop_segmentation_state.cpp
     src/bt_actions/generate_grasping_candidates_action.cpp
     src/behaviortree_register_gpd_utils_plugins.cpp
 )
+target_compile_definitions(${PROJECT_NAME} PRIVATE  BT_PLUGIN_EXPORT)
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${GENERATOR_LIB} ${PCL_LIBRARIES})
 
