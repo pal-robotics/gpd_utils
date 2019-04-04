@@ -1,6 +1,7 @@
 #ifndef OBJECT_BOUNDING_BOX_H
 #define OBJECT_BOUNDING_BOX_H
 
+#include <pcl/search/impl/search.hpp>
 #include <geometry_msgs/PointStamped.h>
 
 namespace gpd_utils
