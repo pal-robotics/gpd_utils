@@ -36,9 +36,7 @@ BT::NodeStatus ObjectCloudExtractionAction::tick()
   gpd_utils::BoundingBox bbox;
   obj_info_->computeObjectBoundingBox(*desired_object, bbox);
 
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr object_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  TTD_->getObjectCloud(tabletop_cloud.value(), bbox, object_cloud);
-  setOutput("object_cloud", object_cloud);
+  setOutput("object_cloud", TTD_->getObjectCloud(tabletop_cloud.value(), bbox));
   return BT::NodeStatus::SUCCESS;
 }
 }

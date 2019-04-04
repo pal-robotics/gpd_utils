@@ -33,7 +33,8 @@ TEST(GraspCandidatesEvaluationTest, graspCandidatesTest)
   pal::TableTopDetector<pcl::PointXYZRGB> TTD(nh);
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr object_cloud;
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr empty_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  ASSERT_FALSE(TTD.extractOneCluster(empty_cloud, object_cloud));
+  object_cloud = TTD.extractOneCluster(empty_cloud);
+  ASSERT_TRUE(object_cloud->empty());
   for (auto it = rosbags_param.begin(); it != rosbags_param.end(); it++)
   {
     std::string bag_path = pack_path + "/test/segmentation_bags/" + it->first;
@@ -63,8 +64,8 @@ TEST(GraspCandidatesEvaluationTest, graspCandidatesTest)
     ASSERT_TRUE(segment_plane.performTableSegmentation());
     ASSERT_GT(segment_plane.getTableTopCloud()->size(), 0);
     EXPECT_NEAR(segment_plane.getTableHeight(), it->second, 0.02);
-    object_cloud.reset(new pcl::PointCloud<pcl::PointXYZRGB>());
-    ASSERT_TRUE(TTD.extractOneCluster(segment_plane.getTableTopCloud(), object_cloud));
+    object_cloud = TTD.extractOneCluster(segment_plane.getTableTopCloud());
+    ASSERT_FALSE(object_cloud->empty());
     EXPECT_NEAR(object_cloud->size(), cluster_info_param.at(it->first), 1000);
   }
 }

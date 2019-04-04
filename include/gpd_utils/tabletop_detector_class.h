@@ -22,13 +22,12 @@ public:
 
   virtual ~TableTopDetector();
 
-  bool extractOneCluster(const typename pcl::PointCloud<PointT>::Ptr &cloud,
-                         typename pcl::PointCloud<PointT>::Ptr &clusterCloud,
-                         int points_threshold = 100) const;
+  typename pcl::PointCloud<PointT>::Ptr extractOneCluster(
+      const typename pcl::PointCloud<PointT>::Ptr &cloud, int points_threshold = 100) const;
 
-  void getObjectCloud(const typename pcl::PointCloud<PointT>::Ptr &tabletop_cloud,
-                      const gpd_utils::BoundingBox &bb_points,
-                      typename pcl::PointCloud<PointT>::Ptr &object_cloud) const;
+  typename pcl::PointCloud<PointT>::Ptr getObjectCloud(
+      const typename pcl::PointCloud<PointT>::Ptr &tabletop_cloud,
+      const gpd_utils::BoundingBox &bb_points) const;
 
 private:
   ros::NodeHandle nh_;
@@ -61,14 +60,14 @@ TableTopDetector<PointT>::~TableTopDetector()
 }
 
 template <class PointT>
-bool TableTopDetector<PointT>::extractOneCluster(const typename pcl::PointCloud<PointT>::Ptr &cloud,
-                                                 typename pcl::PointCloud<PointT>::Ptr &clusterCloud,
-                                                 int points_threshold) const
+typename pcl::PointCloud<PointT>::Ptr TableTopDetector<PointT>::extractOneCluster(
+    const typename pcl::PointCloud<PointT>::Ptr &cloud, int points_threshold) const
 {
+  typename pcl::PointCloud<PointT>::Ptr clusterCloud(new pcl::PointCloud<PointT>());
   if ((cloud->width * cloud->height) == 0)
   {
     ROS_DEBUG("Empty input point cloud!!");
-    return false;
+    return clusterCloud;
   }
 
   // Euclidean Cluster Extraction
@@ -98,17 +97,18 @@ bool TableTopDetector<PointT>::extractOneCluster(const typename pcl::PointCloud<
       ROS_INFO_STREAM("Found pointcloud representing the cluster: "
                       << cloud_cluster->points.size() << " data points.");
       pcl::copyPointCloud(*cloud_cluster, *clusterCloud);
-      return true;
+      return clusterCloud;
     }
   }
-  return true;
+  return clusterCloud;
 }
 
 template <class PointT>
-void TableTopDetector<PointT>::getObjectCloud(const typename pcl::PointCloud<PointT>::Ptr &tabletop_cloud,
-                                              const gpd_utils::BoundingBox &bb_points,
-                                              typename pcl::PointCloud<PointT>::Ptr &object_cloud) const
+typename pcl::PointCloud<PointT>::Ptr TableTopDetector<PointT>::getObjectCloud(
+    const typename pcl::PointCloud<PointT>::Ptr &tabletop_cloud,
+    const gpd_utils::BoundingBox &bb_points) const
 {
+  typename pcl::PointCloud<PointT>::Ptr object_cloud(new pcl::PointCloud<PointT>());
   double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0;
   xmin = 0.7 * bb_points.ctr_point_.point.x;
   xmax = 1.2 * bb_points.ctr_point_.point.x;
@@ -130,6 +130,7 @@ void TableTopDetector<PointT>::getObjectCloud(const typename pcl::PointCloud<Poi
   pal::passThrough<PointT>(tabletop_cloud, "y", ymin, ymax, object_cloud);
   pal::passThrough<PointT>(object_cloud, "x", xmin, xmax, object_cloud);
   ROS_INFO("Found objects point cloud of %ld points", object_cloud->size());
+  return object_cloud;
 
 
   //    /// Finding the non_object point cloud

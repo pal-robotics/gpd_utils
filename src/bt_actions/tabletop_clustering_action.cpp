@@ -21,9 +21,7 @@ void TableTopClusteringAction::init(const ros::NodeHandle &nh)
 BT::NodeStatus TableTopClusteringAction::tick()
 {
   GET_INPUT(pcl::PointCloud<pcl::PointXYZRGB>::Ptr, tabletop_cloud);
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr object_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  TTD_->extractOneCluster(tabletop_cloud.value(), object_cloud);
-  setOutput("object_cloud", object_cloud);
+  setOutput("object_cloud", TTD_->extractOneCluster(tabletop_cloud.value()));
   return BT::NodeStatus::SUCCESS;
 }
 }
