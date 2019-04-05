@@ -170,7 +170,8 @@ install(DIRECTORY include/${PROJECT_NAME}/
 if(CATKIN_ENABLE_TESTING)
 
   find_package(rostest REQUIRED)
-  include_directories(SYSTEM ${catkin_INCLUDE_DIRS})
+  find_package(pal_test_utils REQUIRED)
+  include_directories(SYSTEM ${catkin_INCLUDE_DIRS} ${pal_test_utils_INCLUDE_DIRS})
 
   #### Setup targets to download data files
   catkin_download_test_data(
@@ -192,5 +193,9 @@ if(CATKIN_ENABLE_TESTING)
   add_rostest_gtest(table_segmentation-test test/table_segmentation_test.test test/table_segmentation_test.cpp)
   target_link_libraries(table_segmentation-test ${catkin_LIBRARIES})
   add_dependencies(table_segmentation-test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_test_files)
+
+  add_rostest_gmock(object_recognition_info-test test/object_recognition_info_test.test test/object_recognition_info_test.cpp)
+  target_link_libraries(object_recognition_info-test ${PROJECT_NAME} ${catkin_LIBRARIES})
+  add_dependencies(object_recognition_info-test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_test_files)
 
 endif()
