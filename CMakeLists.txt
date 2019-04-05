@@ -99,6 +99,7 @@ add_library(${PROJECT_NAME}
     src/tabletop_detector_class.cpp
     src/segment_table.cpp
     src/object_recognition_info.cpp
+    src/bt_actions/bt_nodes_initialization.cpp
     src/bt_actions/tabletop_segmentation_action.cpp
     src/bt_actions/tabletop_clustering_action.cpp
     src/bt_actions/object_cloud_extraction_action.cpp
