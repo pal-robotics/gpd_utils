@@ -149,7 +149,7 @@ TEST(GraspCandidatesEvaluationTest, graspObjectCandidatesTest)
     cloud_topic.clear();
     cloud_topic.push_back("/original_cloud");
     rosbag::View view_original(rbag, rosbag::TopicQuery(cloud_topic));
-    for (rosbag::MessageInstance const &m : view_object)
+    for (rosbag::MessageInstance const &m : view_original)
     {
       if (!orig_cloud_msg.get())
         orig_cloud_msg = m.instantiate<sensor_msgs::PointCloud2>();
@@ -196,7 +196,7 @@ TEST(GraspCandidatesEvaluationTest, graspObjectCandidatesTest)
     {
       ASSERT_TRUE(result.grasp_candidates.empty());
     }
-//    EXPECT_GE(result.grasp_candidates.size(), floor(expected_candidates.poses.size() / 5.0));
+    EXPECT_GE(result.grasp_candidates.size(), floor(expected_candidates.poses.size() / 3.0));
     expectCandidatesInCloudVicinity(result.grasp_candidates, minPt, maxPt, 0.11);
   }
 }
