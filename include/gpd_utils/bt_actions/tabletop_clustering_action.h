@@ -27,12 +27,11 @@ public:
     return ports;
   }
 
-  void init(const ros::NodeHandle &nh);
+  void init(ros::NodeHandle nh);
 
   virtual BT::NodeStatus tick() override;
 
 protected:
-  ros::NodeHandle nh_;
   std::unique_ptr<pal::TableTopDetector<pcl::PointXYZRGB>> TTD_;
 };
 }

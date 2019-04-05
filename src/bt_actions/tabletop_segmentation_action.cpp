@@ -7,18 +7,22 @@ TableTopSegmentationAction::TableTopSegmentationAction(const std::string &name,
                                                        const BT::NodeConfiguration &config)
   : BT::SyncActionNode(name, config)
 {
+  ros::NodeHandle nh;
+  ros::NodeHandle priv_nh("~");
+  
+  pal::PlanarSegmentationParams planar_segm_params;
+  planar_segm_params.readConfig<ariles::ros>(priv_nh, "PlanarSegmentationParams");
+  init(nh, priv_nh, planar_segm_params);
 }
 
 TableTopSegmentationAction::~TableTopSegmentationAction()
 {
 }
 
-void TableTopSegmentationAction::init(const ros::NodeHandle &nh, const ros::NodeHandle &pnh,
+void TableTopSegmentationAction::init(ros::NodeHandle nh, ros::NodeHandle pnh,
                                       const PlanarSegmentationParams &params)
 {
-  nh_ = nh;
-  pnh_ = pnh;
-  segment_plane_.reset(new PlanarSegmentation<pcl::PointXYZRGB>(nh_, pnh_, params));
+  segment_plane_.reset(new PlanarSegmentation<pcl::PointXYZRGB>(nh, pnh, params));
 }
 
 BT::NodeStatus TableTopSegmentationAction::tick()

@@ -33,12 +33,13 @@ public:
     return ports;
   }
 
-  void init(const ros::NodeHandle &nh);
+  void init();
 
   virtual BT::NodeStatus tick() override;
 
 protected:
   ros::NodeHandle nh_;
+  ros::CallbackQueue queue_;
   std::unique_ptr<actionlib::SimpleActionClient<gpd_utils::GraspCandidatesGenerationAction>> ac_;
 };
 }

@@ -20,7 +20,7 @@ void initGPDBTNodes(BT::Tree &tree, ros::NodeHandle nh, ros::NodeHandle priv_nh,
   {
     if (auto grasp_cand_node = dynamic_cast<pal::GenerateGraspingCandidatesAction *>(node.get()))
     {
-      grasp_cand_node->init(nh);
+      grasp_cand_node->init();
     }
     else if (auto obj_cloud_node = dynamic_cast<pal::ObjectCloudExtractionAction *>(node.get()))
     {

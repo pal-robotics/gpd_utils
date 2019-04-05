@@ -6,17 +6,18 @@ GenerateGraspingCandidatesAction::GenerateGraspingCandidatesAction(const std::st
                                                                    const BT::NodeConfiguration &config)
   : BT::SyncActionNode(name, config)
 {
+  nh_.setCallbackQueue(&queue_);
+  init();
 }
 
 GenerateGraspingCandidatesAction::~GenerateGraspingCandidatesAction()
 {
 }
 
-void GenerateGraspingCandidatesAction::init(const ros::NodeHandle &nh)
+void GenerateGraspingCandidatesAction::init()
 {
-  nh_ = nh;
-  ac_.reset(new actionlib::SimpleActionClient<gpd_utils::GraspCandidatesGenerationAction>(
-      "/generate_grasp_candidates", true));
+  ac_.reset(new actionlib::SimpleActionClient<gpd_utils::GraspCandidatesGenerationAction>(nh_,
+      "/generate_grasp_candidates", false));
 }
 
 BT::NodeStatus GenerateGraspingCandidatesAction::tick()
@@ -39,8 +40,15 @@ BT::NodeStatus GenerateGraspingCandidatesAction::tick()
   pcl::toROSMsg(*original_cloud_transformed.value(), goal.pointcloud);
 
   ROS_INFO("Sending the pointcloud to generate the grasping candidates!");
-  actionlib::SimpleClientGoalState state = ac_->sendGoalAndWait(goal, ros::Duration(25.0));
-  if (state != actionlib::SimpleClientGoalState::SUCCEEDED)
+  ros::Time timeout = ros::Time::now() + ros::Duration(25);
+  
+  ac_->sendGoal(goal);
+  while (!ac_->getState().isDone() && (ros::Time::now() < timeout))
+  {
+    ros::Duration(0.1).sleep();
+    queue_.callAvailable();
+  }
+  if (ac_->getState() != actionlib::SimpleClientGoalState::SUCCEEDED)
     return BT::NodeStatus::FAILURE;
 
   gpd_utils::GraspCandidatesGenerationResult result;
