@@ -221,8 +221,10 @@ bool PlanarSegmentation<PointT>::processCloudData()
     //        bool transform_complete =
     //        pcl_ros::transformPointCloud(params_.processing_frame_,
     //        *pointcloud_org_, *cloud_org_transformed_, _tfListener);
+    ros::Time original_time;
+    pcl_conversions::fromPCL(pointcloud_org_->header.stamp, original_time);
     bool transform_complete = pcl_ros::transformPointCloud(
-        params_.processing_frame_, ros::Time(0), *pointcloud_org_,
+        params_.processing_frame_, original_time, *pointcloud_org_,
         pointcloud_org_->header.frame_id, *cloud_org_transformed_, _tfListener);
     if (!transform_complete)
     {
@@ -230,6 +232,7 @@ bool PlanarSegmentation<PointT>::processCloudData()
       return false;
     }
     cloud_org_transformed_->header.frame_id = params_.processing_frame_;
+    cloud_org_transformed_->header.stamp = pointcloud_org_->header.stamp;
   }
   else
     cloud_org_transformed_ = pointcloud_org_;
