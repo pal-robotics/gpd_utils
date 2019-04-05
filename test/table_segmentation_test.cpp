@@ -52,7 +52,10 @@ TEST(GraspCandidatesEvaluationTest, graspCandidatesTest)
       if (!image_msg.get())
         image_msg = m.instantiate<sensor_msgs::CompressedImage>();
     }
+    pcl::uint64_t expected_timestamp;
+    pcl_conversions::toPCL(cloud_msg->header.stamp, expected_timestamp);
     pcl::PointCloud<pcl::PointXYZ> pointcloud_info = pcl::PointCloud<pcl::PointXYZ>();
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr tabletop_cloud;
     pcl::PointXYZ minPt, maxPt;
     ASSERT_TRUE(cloud_msg.get());
     if (!cloud_msg->data.empty())
@@ -64,9 +67,14 @@ TEST(GraspCandidatesEvaluationTest, graspCandidatesTest)
     ASSERT_TRUE(segment_plane.performTableSegmentation());
     ASSERT_GT(segment_plane.getTableTopCloud()->size(), 0);
     EXPECT_NEAR(segment_plane.getTableHeight(), it->second, 0.02);
-    object_cloud = TTD.extractOneCluster(segment_plane.getTableTopCloud());
+    tabletop_cloud = segment_plane.getTableTopCloud();
+    EXPECT_EQ(expected_timestamp, tabletop_cloud->header.stamp);
+    EXPECT_EQ("/base_footprint", tabletop_cloud->header.frame_id);
+    object_cloud = TTD.extractOneCluster(tabletop_cloud);
     ASSERT_FALSE(object_cloud->empty());
     EXPECT_NEAR(object_cloud->size(), cluster_info_param.at(it->first), 1000);
+    EXPECT_EQ(expected_timestamp, object_cloud->header.stamp);
+    EXPECT_EQ("/base_footprint", object_cloud->header.frame_id);
   }
 }
 }

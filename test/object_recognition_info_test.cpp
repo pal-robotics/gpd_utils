@@ -81,6 +81,7 @@ TEST(ObjectRecognitionInfoTest, pointCloudCroppingTest)
           "xtion_rgb_optical_frame", ros::Time(0), *original_cloud_msg,
           original_cloud_msg->header.frame_id, *original_cloud_msg, tfListener);
       original_cloud_msg->header.frame_id = "xtion_rgb_optical_frame";
+      pcl_conversions::toPCL(ros::Time::now(), original_cloud_msg->header.stamp);
     }
     cloud_topic.clear();
     cloud_topic.push_back("/tabletop_cloud");
@@ -93,6 +94,7 @@ TEST(ObjectRecognitionInfoTest, pointCloudCroppingTest)
       {
         pcl::fromROSMsg(*cloud_msg, *tabletopcloud_msg);
       }
+      tabletopcloud_msg->header.stamp = original_cloud_msg->header.stamp;
     }
     ROS_INFO("The width and the height of the image is %d, %d", original_cloud_msg->width,
              original_cloud_msg->height);
@@ -108,6 +110,8 @@ TEST(ObjectRecognitionInfoTest, pointCloudCroppingTest)
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr clustered_cloud =
         TTD.getObjectCloud(tabletopcloud_msg, bbox);
     ASSERT_NEAR(clustered_cloud->size(), object_cloud_msg->width * object_cloud_msg->height, 100);
+    EXPECT_EQ(original_cloud_msg->header.stamp, clustered_cloud->header.stamp);
+    EXPECT_EQ("/base_footprint", clustered_cloud->header.frame_id);
   }
 }
 }
