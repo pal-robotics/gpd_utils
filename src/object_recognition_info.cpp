@@ -58,9 +58,9 @@ void ObjectRecognitionInfo::transformPoint(const std::string &frame_id,
   {
     try
     {
-      _tfListener.waitForTransform(frame_id, point.header.frame_id, ros::Time(0),
+      _tfListener.waitForTransform(frame_id, point.header.frame_id, point.header.stamp,
                                    ros::Duration(10.0));
-      _tfListener.transformPoint(frame_id, ros::Time(0), point, point.header.frame_id, point);
+      _tfListener.transformPoint(frame_id, point, point);
       success = true;
     }
     catch (tf::ExtrapolationException e)

@@ -43,9 +43,6 @@ std::string ObjectCloudExtractionState::execute(smach_c::UserData &user_data)
   gpd_utils::BoundingBox bbox;
   obj_info_.computeObjectBoundingBox(desired_object, bbox);
 
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr clustered_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  TTD_.getObjectCloud(tabletop_cloud, bbox, clustered_cloud);
-
-  user_data.addOrUpdateProperty("~object_cloud", clustered_cloud);
+  user_data.addOrUpdateProperty("~object_cloud", TTD_.getObjectCloud(tabletop_cloud, bbox));
   return smach_c::SUCCESS;
 }

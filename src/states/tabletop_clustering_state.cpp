@@ -31,9 +31,6 @@ std::string TableTopClusteringState::execute(smach_c::UserData &user_data)
     ROS_ERROR_STREAM("Unable to obtain the point cloud and the image info from the propert_bag");
     return smach_c::FAILURE;
   }
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr clustered_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-  TTD_.extractOneCluster(tabletop_cloud, clustered_cloud);
-
-  user_data.addOrUpdateProperty("~object_cloud", clustered_cloud);
+  user_data.addOrUpdateProperty("~object_cloud", TTD_.extractOneCluster(tabletop_cloud));
   return smach_c::SUCCESS;
 }

@@ -32,9 +32,9 @@ find_package(catkin REQUIRED COMPONENTS
   gpd
   pal_detection_msgs
   message_generation
-  smach_c
-  smach_c_pal_states
-  smach_c_ros_states
+  #smach_c
+  #smach_c_pal_states
+  #smach_c_ros_states
   std_msgs
   tf
   message_filters
@@ -72,7 +72,7 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS gpd roscpp pcl_conversions smach_c smach_c_pal_states smach_c_ros_states tf message_filters pal_pcl pal_detection_msgs visualization_msgs pal_ariles actionlib actionlib_msgs sensor_msgs geometry_msgs
+  CATKIN_DEPENDS gpd roscpp pcl_conversions tf message_filters pal_pcl pal_detection_msgs visualization_msgs pal_ariles actionlib actionlib_msgs sensor_msgs geometry_msgs #smach_c smach_c_pal_states smach_c_ros_states
 # DEPENDS
 )
 
@@ -91,10 +91,11 @@ include_directories(
 
 ## Declare a C++ library
 
-add_library(${PROJECT_NAME} src/states/tabletop_segmentation_state.cpp
-    src/states/tabletop_clustering_state.cpp
-    src/states/generate_grasping_candidates_state.cpp
-    src/states/object_cloud_extraction_state.cpp
+add_library(${PROJECT_NAME}
+    #src/states/tabletop_segmentation_state.cpp
+    #src/states/tabletop_clustering_state.cpp
+    #src/states/generate_grasping_candidates_state.cpp
+    #src/states/object_cloud_extraction_state.cpp
     src/tabletop_detector_class.cpp
     src/segment_table.cpp
     src/object_recognition_info.cpp
@@ -108,30 +109,24 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE  BT_PLUGIN_EXPORT)
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${GENERATOR_LIB} ${PCL_LIBRARIES})
 
-add_executable(pal_grasp_detection_node src/pal_grasp_detection_node.cpp)
 add_executable(pal_grasp_generation_server src/pal_grasp_generation_server.cpp)
-add_executable(pal_grasp_generation_client src/pal_grasp_generation_client.cpp)
 
-add_dependencies(pal_grasp_detection_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(pal_grasp_generation_server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(pal_grasp_generation_client ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(pal_grasp_detection_node  ${catkin_LIBRARIES} ${GENERATOR_LIB})
 target_link_libraries(pal_grasp_generation_server  ${catkin_LIBRARIES} ${GENERATOR_LIB})
-target_link_libraries(pal_grasp_generation_client  ${catkin_LIBRARIES} ${GENERATOR_LIB})
 
-add_executable(segment_table_node src/segment_table_node.cpp)
-target_link_libraries(segment_table_node ${PROJECT_NAME} ${catkin_LIBRARIES})
-add_dependencies(segment_table_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+#add_executable(segment_table_node src/segment_table_node.cpp)
+#target_link_libraries(segment_table_node ${PROJECT_NAME} ${catkin_LIBRARIES})
+#add_dependencies(segment_table_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-add_executable(tabletop_cloud_candidates_sm src/tabletop_cloud_candidates_sm.cpp)
-target_link_libraries(tabletop_cloud_candidates_sm ${PROJECT_NAME} ${catkin_LIBRARIES})
-add_dependencies(tabletop_cloud_candidates_sm ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+#add_executable(tabletop_cloud_candidates_sm src/tabletop_cloud_candidates_sm.cpp)
+#target_link_libraries(tabletop_cloud_candidates_sm ${PROJECT_NAME} ${catkin_LIBRARIES})
+#add_dependencies(tabletop_cloud_candidates_sm ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-add_executable(object_cloud_candidates_sm src/object_cloud_candidates_sm.cpp)
-target_link_libraries(object_cloud_candidates_sm ${PROJECT_NAME} ${catkin_LIBRARIES})
-add_dependencies(object_cloud_candidates_sm ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+#add_executable(object_cloud_candidates_sm src/object_cloud_candidates_sm.cpp)
+#target_link_libraries(object_cloud_candidates_sm ${PROJECT_NAME} ${catkin_LIBRARIES})
+#add_dependencies(object_cloud_candidates_sm ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 add_executable(grasp_cand_gen_bt_node src/grasp_cand_gen_bt_node.cpp)
 target_link_libraries(grasp_cand_gen_bt_node ${PROJECT_NAME} ${catkin_LIBRARIES})
@@ -149,13 +144,13 @@ install(TARGETS ${PROJECT_NAME}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 )
 
-install(TARGETS pal_grasp_detection_node pal_grasp_generation_server pal_grasp_generation_client
+install(TARGETS pal_grasp_generation_server
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-install(TARGETS segment_table_node tabletop_cloud_candidates_sm object_cloud_candidates_sm grasp_cand_gen_bt_node
+install(TARGETS grasp_cand_gen_bt_node #segment_table_node tabletop_cloud_candidates_sm object_cloud_candidates_sm
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -173,17 +168,18 @@ install(DIRECTORY include/${PROJECT_NAME}/
 if(CATKIN_ENABLE_TESTING)
 
   find_package(rostest REQUIRED)
-  include_directories(SYSTEM ${catkin_INCLUDE_DIRS})
+  find_package(pal_test_utils REQUIRED)
+  include_directories(SYSTEM ${catkin_INCLUDE_DIRS} ${pal_test_utils_INCLUDE_DIRS})
 
   #### Setup targets to download data files
   catkin_download_test_data(
     download_${PROJECT_NAME}_test_files
-    http://mars/test-binaries/${PROJECT_NAME}/test_files.tar.gz
+    http://mars/test-binaries/${PROJECT_NAME}/test_files_v2.tar.gz
     DESTINATION ${CMAKE_SOURCE_DIR}/test
-    MD5 f76e62444d707129793c3493c0b194fa
+    MD5 f809b425995d11ee673692a5eaf379ad
   )
   add_custom_target(${PROJECT_NAME}_test_files
-    COMMAND "tar" "xfv" "test_files.tar.gz"
+    COMMAND "tar" "xfv" "test_files_v2.tar.gz"
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/test
     DEPENDS download_${PROJECT_NAME}_test_files
   )
@@ -195,5 +191,9 @@ if(CATKIN_ENABLE_TESTING)
   add_rostest_gtest(table_segmentation-test test/table_segmentation_test.test test/table_segmentation_test.cpp)
   target_link_libraries(table_segmentation-test ${catkin_LIBRARIES})
   add_dependencies(table_segmentation-test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_test_files)
+
+  add_rostest_gmock(object_recognition_info-test test/object_recognition_info_test.test test/object_recognition_info_test.cpp)
+  target_link_libraries(object_recognition_info-test ${PROJECT_NAME} ${catkin_LIBRARIES})
+  add_dependencies(object_recognition_info-test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_test_files)
 
 endif()
