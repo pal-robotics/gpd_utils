@@ -71,7 +71,7 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES ${PROJECT_NAME}
+  LIBRARIES ${PROJECT_NAME} ${PROJECT_NAME}_initialization
   CATKIN_DEPENDS gpd roscpp pcl_conversions tf message_filters pal_pcl pal_detection_msgs visualization_msgs pal_ariles actionlib actionlib_msgs sensor_msgs geometry_msgs #smach_c smach_c_pal_states smach_c_ros_states
 # DEPENDS
 )
@@ -83,7 +83,8 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
- include
+ include)
+include_directories(SYSTEM
   ${catkin_INCLUDE_DIRS}
   ${PCL_INCLUDE_DIRS}
   ${GENERATOR_LIB_INCLUDE_DIR}
@@ -99,16 +100,19 @@ add_library(${PROJECT_NAME}
     src/tabletop_detector_class.cpp
     src/segment_table.cpp
     src/object_recognition_info.cpp
-    src/bt_actions/bt_nodes_initialization.cpp
     src/bt_actions/tabletop_segmentation_action.cpp
     src/bt_actions/tabletop_clustering_action.cpp
     src/bt_actions/object_cloud_extraction_action.cpp
     src/bt_actions/generate_grasping_candidates_action.cpp
     src/behaviortree_register_gpd_utils_plugins.cpp
 )
+
 target_compile_definitions(${PROJECT_NAME} PRIVATE  BT_PLUGIN_EXPORT)
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${GENERATOR_LIB} ${PCL_LIBRARIES})
+
+add_library(${PROJECT_NAME}_initialization STATIC src/bt_actions/bt_nodes_initialization.cpp)
+target_link_libraries(${PROJECT_NAME}_initialization ${PROJECT_NAME})
 
 add_executable(pal_grasp_generation_server src/pal_grasp_generation_server.cpp)
 
@@ -130,7 +134,7 @@ target_link_libraries(pal_grasp_generation_server  ${catkin_LIBRARIES} ${GENERAT
 #add_dependencies(object_cloud_candidates_sm ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 add_executable(grasp_cand_gen_bt_node src/grasp_cand_gen_bt_node.cpp)
-target_link_libraries(grasp_cand_gen_bt_node ${PROJECT_NAME} ${catkin_LIBRARIES})
+target_link_libraries(grasp_cand_gen_bt_node ${PROJECT_NAME} ${catkin_LIBRARIES} ${PROJECT_NAME}_initialization )
 add_dependencies(grasp_cand_gen_bt_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 #############
