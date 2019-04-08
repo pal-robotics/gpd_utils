@@ -69,12 +69,12 @@ TEST(GraspCandidatesEvaluationTest, graspCandidatesTest)
     EXPECT_NEAR(segment_plane.getTableHeight(), it->second, 0.02);
     tabletop_cloud = segment_plane.getTableTopCloud();
     EXPECT_EQ(expected_timestamp, tabletop_cloud->header.stamp);
-    EXPECT_EQ("/base_footprint", tabletop_cloud->header.frame_id);
+    EXPECT_EQ("base_footprint", tabletop_cloud->header.frame_id);
     object_cloud = TTD.extractOneCluster(tabletop_cloud);
     ASSERT_FALSE(object_cloud->empty());
     EXPECT_NEAR(object_cloud->size(), cluster_info_param.at(it->first), 1000);
     EXPECT_EQ(expected_timestamp, object_cloud->header.stamp);
-    EXPECT_EQ("/base_footprint", object_cloud->header.frame_id);
+    EXPECT_EQ("base_footprint", object_cloud->header.frame_id);
   }
 }
 }

@@ -111,7 +111,7 @@ TEST(ObjectRecognitionInfoTest, pointCloudCroppingTest)
         TTD.getObjectCloud(tabletopcloud_msg, bbox);
     ASSERT_NEAR(clustered_cloud->size(), object_cloud_msg->width * object_cloud_msg->height, 100);
     EXPECT_EQ(original_cloud_msg->header.stamp, clustered_cloud->header.stamp);
-    EXPECT_EQ("/base_footprint", clustered_cloud->header.frame_id);
+    EXPECT_EQ("base_footprint", clustered_cloud->header.frame_id);
   }
 }
 }

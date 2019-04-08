@@ -6,7 +6,7 @@ ObjectRecognitionInfo::ObjectRecognitionInfo(ros::NodeHandle &nh, const ros::Dur
   : nh_(nh)
   , ac_("/inference_server", true)
   , desired_object_()
-  , out_frame_("/base_footprint")
+  , out_frame_("base_footprint")
   , received_data_(false)
 {
   lu_pub_ = nh_.advertise<geometry_msgs::PointStamped>("bounding_box_point_lu", 10, true);
