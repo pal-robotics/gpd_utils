@@ -17,7 +17,7 @@ ObjectCloudExtractionAction::~ObjectCloudExtractionAction()
 void ObjectCloudExtractionAction::init(ros::NodeHandle nh)
 {
   TTD_.reset(new pal::TableTopDetector<pcl::PointXYZRGB>(nh));
-  obj_info_.reset(new pal::ObjectRecognitionInfo(nh, ros::Duration(5.0)));
+  obj_info_.reset(new pal::ObjectRecognitionInfo(nh, ros::Duration(0.5)));
 }
 
 BT::NodeStatus ObjectCloudExtractionAction::tick()

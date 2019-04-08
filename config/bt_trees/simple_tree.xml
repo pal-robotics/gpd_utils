@@ -1,6 +1,6 @@
-<root main_tree_to_execute="BehaviorTree">
+<root main_tree_to_execute="GPDGraspGeneration">
     <!-- ////////// -->
-    <BehaviorTree ID="BehaviorTree">
+    <BehaviorTree ID="GPDGraspGeneration">
         <Sequence>
             <RetryUntilSuccesful num_attempts="3">
                 <TableTopSegmentation original_cloud="{original_cloud}" image_scene="{image_scene}" table_height="{table_height}" original_cloud_transformed="{original_cloud_transformed}" tabletop_cloud="{tabletop_cloud}" plane_cloud="{plane_cloud}" nonplane_cloud="{nonplane_cloud}"/>
