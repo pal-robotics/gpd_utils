@@ -1,6 +1,6 @@
 PlanarSegmentationParams:
   rate: 1.0
-  processing_frame: "/base_footprint"
+  processing_frame: "base_footprint"
   passthrough_zmin: 0.4
   passthrough_zmax: 1.1
   passthrough_xmin: 0.4
