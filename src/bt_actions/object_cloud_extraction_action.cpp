@@ -6,17 +6,18 @@ ObjectCloudExtractionAction::ObjectCloudExtractionAction(const std::string &name
                                                          const BT::NodeConfiguration &config)
   : BT::SyncActionNode(name, config)
 {
+  ros::NodeHandle nh;
+  init(nh); 
 }
 
 ObjectCloudExtractionAction::~ObjectCloudExtractionAction()
 {
 }
 
-void ObjectCloudExtractionAction::init(const ros::NodeHandle &nh)
+void ObjectCloudExtractionAction::init(ros::NodeHandle nh)
 {
-  nh_ = nh;
-  TTD_.reset(new pal::TableTopDetector<pcl::PointXYZRGB>(nh_));
-  obj_info_.reset(new pal::ObjectRecognitionInfo(nh_, ros::Duration(5.0)));
+  TTD_.reset(new pal::TableTopDetector<pcl::PointXYZRGB>(nh));
+  obj_info_.reset(new pal::ObjectRecognitionInfo(nh, ros::Duration(0.5)));
 }
 
 BT::NodeStatus ObjectCloudExtractionAction::tick()

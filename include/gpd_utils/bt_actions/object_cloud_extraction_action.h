@@ -36,10 +36,9 @@ public:
 
   virtual BT::NodeStatus tick() override;
 
-  void init(const ros::NodeHandle &nh);
+  void init(ros::NodeHandle nh);
 
 protected:
-  ros::NodeHandle nh_;
   std::unique_ptr<pal::TableTopDetector<pcl::PointXYZRGB>> TTD_;
   std::unique_ptr<ObjectRecognitionInfo> obj_info_;
 };

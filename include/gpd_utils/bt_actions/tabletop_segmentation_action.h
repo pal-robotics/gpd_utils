@@ -38,12 +38,10 @@ public:
 
   virtual BT::NodeStatus tick() override;
 
-  void init(const ros::NodeHandle &nh, const ros::NodeHandle &pnh,
+  void init(ros::NodeHandle nh, ros::NodeHandle pnh,
             const PlanarSegmentationParams &params);
 
 protected:
-  ros::NodeHandle nh_;
-  ros::NodeHandle pnh_;
   std::unique_ptr<PlanarSegmentation<pcl::PointXYZRGB>> segment_plane_;
 };
 }

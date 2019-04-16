@@ -6,16 +6,17 @@ TableTopClusteringAction::TableTopClusteringAction(const std::string &name,
                                                    const BT::NodeConfiguration &config)
   : BT::SyncActionNode(name, config)
 {
+  ros::NodeHandle nh;
+  init(nh);
 }
 
 TableTopClusteringAction::~TableTopClusteringAction()
 {
 }
 
-void TableTopClusteringAction::init(const ros::NodeHandle &nh)
+void TableTopClusteringAction::init(ros::NodeHandle nh)
 {
-  nh_ = nh;
-  TTD_.reset(new pal::TableTopDetector<pcl::PointXYZRGB>(nh_));
+  TTD_.reset(new pal::TableTopDetector<pcl::PointXYZRGB>(nh));
 }
 
 BT::NodeStatus TableTopClusteringAction::tick()
