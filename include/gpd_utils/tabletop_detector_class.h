@@ -59,15 +59,19 @@ TableTopDetector<PointT>::~TableTopDetector()
   diff_cloud_.reset();
 }
 
+/**
+ * @brief extractOneCluster extracts a cluster from the cloud, if there are no clusters
+ * returns an empty pointcloud
+ */
 template <class PointT>
 typename pcl::PointCloud<PointT>::Ptr TableTopDetector<PointT>::extractOneCluster(
     const typename pcl::PointCloud<PointT>::Ptr &cloud, int points_threshold) const
 {
-  typename pcl::PointCloud<PointT>::Ptr clusterCloud(new pcl::PointCloud<PointT>());
+  typename pcl::PointCloud<PointT>::Ptr empty_cloud(new pcl::PointCloud<PointT>());
   if ((cloud->width * cloud->height) == 0)
   {
     ROS_DEBUG("Empty input point cloud!!");
-    return clusterCloud;
+    return empty_cloud;
   }
 
   // Euclidean Cluster Extraction
@@ -80,7 +84,9 @@ typename pcl::PointCloud<PointT>::Ptr TableTopDetector<PointT>::extractOneCluste
     typename pcl::PointCloud<PointT>::Ptr cloud_cluster(new pcl::PointCloud<PointT>);
     for (std::vector<int>::const_iterator pit = it->indices.begin();
          pit != it->indices.end(); ++pit)
+    {
       cloud_cluster->points.push_back(cloud->points[*pit]);
+    }
     cloud_cluster->width = cloud_cluster->points.size();
     cloud_cluster->height = 1;
     cloud_cluster->is_dense = true;
@@ -96,11 +102,10 @@ typename pcl::PointCloud<PointT>::Ptr TableTopDetector<PointT>::extractOneCluste
     {
       ROS_INFO_STREAM("Found pointcloud representing the cluster: "
                       << cloud_cluster->points.size() << " data points.");
-      pcl::copyPointCloud(*cloud_cluster, *clusterCloud);
-      return clusterCloud;
+      return cloud_cluster;
     }
   }
-  return clusterCloud;
+  return empty_cloud;
 }
 
 template <class PointT>
