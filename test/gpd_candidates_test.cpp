@@ -163,25 +163,25 @@ TEST(GraspCandidatesEvaluationTest, graspObjectCandidatesTest)
                                                          << " points");
     pcl::PointXYZ minPt, maxPt;
     gpd_utils::GraspCandidatesGenerationGoal goal;
-    if (!object_cloud_msg->data.empty())
+    
+    ASSERT_FALSE(object_cloud_msg->data.empty());
+    pcl::PointCloud<pcl::PointXYZ>::Ptr pointcloud_info(new pcl::PointCloud<pcl::PointXYZ>());
+    ASSERT_TRUE(candidates_msg.get());
+    expected_candidates = *candidates_msg;
+    pcl::fromROSMsg(*object_cloud_msg, *pointcloud_info);
+    for (pcl::PointXYZ point : pointcloud_info->points)
     {
-      pcl::PointCloud<pcl::PointXYZ>::Ptr pointcloud_info(new pcl::PointCloud<pcl::PointXYZ>());
-      ASSERT_TRUE(candidates_msg.get());
-      expected_candidates = *candidates_msg;
-      pcl::fromROSMsg(*object_cloud_msg, *pointcloud_info);
-      for (pcl::PointXYZ point : pointcloud_info->points)
-      {
-        geometry_msgs::Point sample_point;
-        sample_point.x = point.x;
-        sample_point.y = point.y;
-        sample_point.z = point.z;
-        goal.samples.push_back(sample_point);
-      }
-      pcl::getMinMax3D(*pointcloud_info, minPt, maxPt);
-      ASSERT_GT(goal.samples.size(), 0);
+      geometry_msgs::Point sample_point;
+      sample_point.x = point.x;
+      sample_point.y = point.y;
+      sample_point.z = point.z;
+      goal.samples.push_back(sample_point);
     }
+    pcl::getMinMax3D(*pointcloud_info, minPt, maxPt);
+    ASSERT_GT(goal.samples.size(), 0);
+  
 
-    goal.pointcloud = *object_cloud_msg;
+    goal.pointcloud = *orig_cloud_msg;
     goal.table_height = table_height;
     ROS_INFO_STREAM("Sending goal and waiting for the result");
     grasp_generation_client_.sendGoalAndWait(goal);
