@@ -179,12 +179,12 @@ if(CATKIN_ENABLE_TESTING)
   #### Setup targets to download data files
   catkin_download_test_data(
     download_${PROJECT_NAME}_test_files
-    http://mars/test-binaries/${PROJECT_NAME}/test_files_v2.tar.gz
+    http://mars/test-binaries/${PROJECT_NAME}/test_files_v3.tar.gz
     DESTINATION ${CMAKE_SOURCE_DIR}/test
-    MD5 f809b425995d11ee673692a5eaf379ad
+    MD5 418e18abb633b60013518cd69b7ea256
   )
   add_custom_target(${PROJECT_NAME}_test_files
-    COMMAND "tar" "xfv" "test_files_v2.tar.gz"
+    COMMAND "tar" "xfv" "test_files_v3.tar.gz"
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/test
     DEPENDS download_${PROJECT_NAME}_test_files
   )

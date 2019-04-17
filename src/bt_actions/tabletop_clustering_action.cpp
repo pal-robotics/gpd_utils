@@ -22,7 +22,10 @@ void TableTopClusteringAction::init(ros::NodeHandle nh)
 BT::NodeStatus TableTopClusteringAction::tick()
 {
   GET_INPUT(pcl::PointCloud<pcl::PointXYZRGB>::Ptr, tabletop_cloud);
-  setOutput("object_cloud", TTD_->extractOneCluster(tabletop_cloud.value()));
+  auto cluster = TTD_->extractOneCluster(tabletop_cloud.value());
+  if (!cluster.get() || cluster->empty())
+    return BT::NodeStatus::FAILURE;
+  setOutput("object_cloud", cluster);
   return BT::NodeStatus::SUCCESS;
 }
 }

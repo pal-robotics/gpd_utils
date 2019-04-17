@@ -49,7 +49,9 @@ BT::NodeStatus GenerateGraspingCandidatesAction::tick()
     queue_.callAvailable();
   }
   if (ac_->getState() != actionlib::SimpleClientGoalState::SUCCEEDED)
+  {
     return BT::NodeStatus::FAILURE;
+  }
 
   gpd_utils::GraspCandidatesGenerationResult result;
   result = *ac_->getResult();
