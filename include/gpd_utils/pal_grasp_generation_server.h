@@ -146,8 +146,7 @@ private:
       has_samples_;              ///< status variables for received (input) messages
   std::string frame_;            ///< point cloud frame
   ros::Subscriber samples_sub_;  ///< ROS subscriber for samples messages
-  ros::Publisher grasps_pub_;    ///< ROS publisher for grasp list messages
-
+  
   bool use_importance_sampling_;   ///< if importance sampling is used
   bool use_rviz_;                  ///< if rviz is used for visualization instead of PCL
   std::vector<double> workspace_;  ///< workspace limits
@@ -161,6 +160,10 @@ private:
   ros::NodeHandle nh_;
   ros::Publisher grasp_pose_pub_;
 
+  bool debug_;
+  ros::Publisher grasps_pub_;    ///< ROS publisher for grasp list messages
+  ros::Publisher input_cloud_pub_;
+  ros::Publisher samples_cloud_pub_;
   actionlib::SimpleActionServer<gpd_utils::GraspCandidatesGenerationAction> grasp_generation_server_;
 };
 }

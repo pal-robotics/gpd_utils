@@ -30,6 +30,8 @@ public:
       const gpd_utils::BoundingBox &bb_points) const;
 
 private:
+  
+  void publishDebugCloud(const typename pcl::PointCloud<PointT>::Ptr &cloud) const;
   ros::NodeHandle nh_;
   bool enabled_;
   double rate_;
@@ -39,11 +41,13 @@ private:
   double period_;
 
   typename pcl::PointCloud<PointT>::Ptr diff_cloud_;
+  bool debug_;
+  mutable ros::Publisher object_cloud_pub_;
 };
 
 template <class PointT>
 TableTopDetector<PointT>::TableTopDetector(ros::NodeHandle &nh)
-  : nh_(nh), enabled_(false), rate_(1.0)
+  : nh_(nh), enabled_(false), rate_(1.0), debug_(false)
 {
   diff_cloud_.reset(new pcl::PointCloud<PointT>());
 
@@ -51,6 +55,15 @@ TableTopDetector<PointT>::TableTopDetector(ros::NodeHandle &nh)
 
   loop_rate_.reset(new ros::Rate(rate_));
   period_ = 1.0 / rate_;
+  
+  
+  ros::NodeHandle priv_nh("~");
+  priv_nh.getParam("debug", debug_);
+  if (debug_)
+  {
+    object_cloud_pub_ =
+        priv_nh.advertise<typename pcl::PointCloud<PointT> >("debug/object_cloud", 1, true);
+  }
 }
 
 template <class PointT>
@@ -102,6 +115,7 @@ typename pcl::PointCloud<PointT>::Ptr TableTopDetector<PointT>::extractOneCluste
     {
       ROS_INFO_STREAM("Found pointcloud representing the cluster: "
                       << cloud_cluster->points.size() << " data points.");
+      publishDebugCloud(cloud_cluster);
       return cloud_cluster;
     }
   }
@@ -135,6 +149,7 @@ typename pcl::PointCloud<PointT>::Ptr TableTopDetector<PointT>::getObjectCloud(
   pal::passThrough<PointT>(tabletop_cloud, "y", ymin, ymax, object_cloud);
   pal::passThrough<PointT>(object_cloud, "x", xmin, xmax, object_cloud);
   ROS_INFO("Found objects point cloud of %ld points", object_cloud->size());
+  publishDebugCloud(object_cloud);
   return object_cloud;
 
 
@@ -147,6 +162,17 @@ typename pcl::PointCloud<PointT>::Ptr TableTopDetector<PointT>::getObjectCloud(
   //    diff_cloud_.reset(new pcl::PointCloud<PointT>());
   //    pcl::copyPointCloud(*passThroughCloud, *diff_cloud_);
 }
+
+
+template<class PointT>
+void TableTopDetector<PointT>::publishDebugCloud(const typename pcl::PointCloud<PointT>::Ptr &cloud) const
+{
+  if (debug_)
+  {
+    object_cloud_pub_.publish(cloud); 
+  }
+}
+
 }
 
 #endif  // TABLETOP_DETECTOR_CLASS_H

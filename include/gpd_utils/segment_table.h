@@ -124,11 +124,11 @@ PlanarSegmentation<PointT>::PlanarSegmentation(ros::NodeHandle& nh, ros::NodeHan
                   << params_.passthrough_xmin_ << " and max: " << params_.passthrough_xmax_);
   ROS_INFO_STREAM("Downsampling leaf size: " << params_.downsampling_size_ << "");
 
-  plane_cloud_pub_ = _pnh.advertise<typename pcl::PointCloud<PointT> >("plane", 1, true);
-  nonplane_cloud_pub_ = _pnh.advertise<typename pcl::PointCloud<PointT> >("nonplane", 1, true);
+  plane_cloud_pub_ = _pnh.advertise<typename pcl::PointCloud<PointT> >("debug/plane", 1, true);
+  nonplane_cloud_pub_ = _pnh.advertise<typename pcl::PointCloud<PointT> >("debug/nonplane", 1, true);
   table_top_cloud_pub_ =
-      _pnh.advertise<typename pcl::PointCloud<PointT> >("tabletop_cloud", 1, true);
-  plane_coeff_pub_ = _pnh.advertise<pcl_msgs::ModelCoefficients>("plane_coeff", 1, true);
+      _pnh.advertise<typename pcl::PointCloud<PointT> >("debug/tabletop_cloud", 1, true);
+  plane_coeff_pub_ = _pnh.advertise<pcl_msgs::ModelCoefficients>("debug/plane_coeff", 1, true);
 
   image_cloud_sync_.reset(new message_filters::Synchronizer<msg_filters_policy>(
       msg_filters_policy(10), cloud_sub_, image_sub_));
