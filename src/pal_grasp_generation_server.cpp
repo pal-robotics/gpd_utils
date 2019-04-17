@@ -150,60 +150,66 @@ std::vector<int> PalGraspGenerationServer::getSamplesInBall(const PointCloudRGBA
 
 void PalGraspGenerationServer::generateCandidates(const gpd_utils::GraspCandidatesGenerationGoalConstPtr& goal)
 {
-  if ((goal->pointcloud.width * goal->pointcloud.height) != 0)
-  {
-    cloud_camera_.reset();
-    Eigen::Matrix3Xd view_points(3, 1);
-    view_points.col(0) = view_point_;
-
-    PointCloudRGBA::Ptr cloud(new PointCloudRGBA);
-    pcl::fromROSMsg(goal->pointcloud, *cloud);
-    cloud_camera_.reset(new CloudCamera(cloud, 0, view_points));
-    cloud_camera_header_ = goal->pointcloud.header;
-    ROS_INFO_STREAM("Received cloud with " << cloud_camera_->getCloudProcessed()->size()
-                                           << " points.");
-
-    // A way to set samples at which the gpd looks for the grasp candidates by setting up
-    // the points in the pointcloud where it need to search
-    if (!goal->samples.empty())
-    {
-      Eigen::Matrix3Xd eig_samples(3, goal->samples.size());
-      for (int i = 0; i < goal->samples.size(); i++)
-      {
-        eig_samples.col(i) << goal->samples[i].x, goal->samples[i].y, goal->samples[i].z;
-      }
-      cloud_camera_->setSamples(eig_samples);
-      ROS_INFO_STREAM("Received object samples of " << goal->samples.size());
-      has_samples_ = true;
-    }
-
-    if (goal->table_height != 0.0)
-      grasp_detector_->setTableHeight(goal->table_height);
-
-    has_cloud_ = true;
-    frame_ = goal->pointcloud.header.frame_id;
-
-    std::vector<Grasp> grasps = detectGraspPosesInPointCloud();
-
-    std::vector<geometry_msgs::PoseStamped> grasp_candidates;
-
-    // Visualize the detected grasps in rviz.
-    if (use_rviz_)
-    {
-      rviz_plotter_->drawGrasps(grasps, frame_);
-      geometry_msgs::PoseArray grasp_candidates_msg;
-      this->convertToGraspPoses(grasps, grasp_candidates_msg);
-      grasp_pose_pub_.publish(grasp_candidates_msg);
-    }
-
-    gpd_utils::GraspCandidatesGenerationResult result;
-    this->convertToGraspCandidates(grasps, result.grasp_candidates);
-    grasp_generation_server_.setSucceeded(result);
-  }
-  else
+  if ((goal->pointcloud.width * goal->pointcloud.height) == 0)
   {
     ROS_WARN_STREAM("Recieved empty pointcloud data, returning zero grasp candidates");
     gpd_utils::GraspCandidatesGenerationResult result;
+    grasp_generation_server_.setAborted();
+    return;
+  }
+    
+  cloud_camera_.reset();
+  Eigen::Matrix3Xd view_points(3, 1);
+  view_points.col(0) = view_point_;
+
+  PointCloudRGBA::Ptr cloud(new PointCloudRGBA);
+  pcl::fromROSMsg(goal->pointcloud, *cloud);
+  cloud_camera_.reset(new CloudCamera(cloud, 0, view_points));
+  cloud_camera_header_ = goal->pointcloud.header;
+  ROS_INFO_STREAM("Received cloud with " << cloud_camera_->getCloudProcessed()->size()
+                                         << " points.");
+
+  // A way to set samples at which the gpd looks for the grasp candidates by setting up
+  // the points in the pointcloud where it need to search
+  if (!goal->samples.empty())
+  {
+    Eigen::Matrix3Xd eig_samples(3, goal->samples.size());
+    for (int i = 0; i < goal->samples.size(); i++)
+    {
+      eig_samples.col(i) << goal->samples[i].x, goal->samples[i].y, goal->samples[i].z;
+    }
+    cloud_camera_->setSamples(eig_samples);
+    ROS_INFO_STREAM("Received object samples of " << goal->samples.size());
+    has_samples_ = true;
+  }
+
+  if (goal->table_height != 0.0)
+    grasp_detector_->setTableHeight(goal->table_height);
+
+  has_cloud_ = true;
+  frame_ = goal->pointcloud.header.frame_id;
+
+  std::vector<Grasp> grasps = detectGraspPosesInPointCloud();
+
+  std::vector<geometry_msgs::PoseStamped> grasp_candidates;
+
+  // Visualize the detected grasps in rviz.
+  if (use_rviz_)
+  {
+    rviz_plotter_->drawGrasps(grasps, frame_);
+    geometry_msgs::PoseArray grasp_candidates_msg;
+    this->convertToGraspPoses(grasps, grasp_candidates_msg);
+    grasp_pose_pub_.publish(grasp_candidates_msg);
+  }
+
+  if (grasps.empty())
+  {
+      grasp_generation_server_.setAborted();        
+  }
+  else
+  {
+    gpd_utils::GraspCandidatesGenerationResult result;
+    this->convertToGraspCandidates(grasps, result.grasp_candidates);
     grasp_generation_server_.setSucceeded(result);
   }
 }
