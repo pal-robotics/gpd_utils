@@ -344,6 +344,7 @@ int main(int argc, char** argv)
   // initialize ROS
   ros::init(argc, argv, "pal_grasp_generation_server");
   ros::NodeHandle node("~");
+  ros::Time::waitForValid();
 
   PalGraspGenerationServer grasp_detection(node);
   //  grasp_detection.run();
