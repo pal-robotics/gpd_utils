@@ -2,6 +2,52 @@
 Changelog for package gpd_utils
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge branch 'fix-no-cluster' into 'master'
+  Fix no cluster
+  See merge request app-tools/gpd_utils!8
+* Increase minimum height for grasps to 7cm
+* wait for time
+* Merge branch 'fix-no-cluster' into 'master'
+  Handle no-cluster scenario
+  See merge request app-tools/gpd_utils!7
+* Improve tiago workspace, add a test for long range
+* Add debug publishers
+* Fail if grasp candidates cannot be generated
+* Handle no-cluster scenario
+* Merge branch 'victor-fixes' into 'master'
+  Victor fixes
+  See merge request app-tools/gpd_utils!6
+* Reduce timeout for connecting to server and change tree name
+* Add initialization statiac lib to solve pcl linking problems
+  Problem described here: https://github.com/PointCloudLibrary/pcl/issues/780
+* Replace /base_footprint with base_footprint
+* Fix incorrect tf frame
+* Nodes will call init themselves
+* Add code to initialize bt nodes
+  REstructured headers so they avoid including segmentation PCL code,
+  which crashes with c++11: https://github.com/PointCloudLibrary/pcl/issues/1870
+* Merge branch 'remove_unused' into 'master'
+  removed unused gpd node
+  See merge request app-tools/gpd_utils!4
+* remove unused grasp generation client node
+* added tests to check for the timestamp change and the frameid expectation
+* fixing the zero timestamp issue and the frame_id issue
+* commenting smach related nodes and packages
+* added new test files changes
+* added object detection based pointcloud cropping tests
+* fixed the cloud in gpd_candidates_test
+* changed return types of the tabletop detector methods
+* added more asserts to tabletop segmentation
+* removed unused gpd node
+* Merge branch 'fix-pcl-link-error' into 'master'
+  Fix PCL link error
+  See merge request app-tools/gpd_utils!5
+* Ad Plugin export for BehaviorTrees
+* Fix PCL link error
+* Contributors: Sai Kishor Kothakota, Victor Lopez
+
 0.0.3 (2019-03-21)
 ------------------
 * Merge branch 'bt-migration' into 'master'
