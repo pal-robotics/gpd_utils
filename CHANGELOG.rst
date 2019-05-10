@@ -2,8 +2,8 @@
 Changelog for package gpd_utils
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.4 (2019-05-10)
+------------------
 * Merge branch 'fix-no-cluster' into 'master'
   Fix no cluster
   See merge request app-tools/gpd_utils!8
