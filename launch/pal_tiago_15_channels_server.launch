@@ -59,7 +59,7 @@
     <rosparam param="vertical_axis"> [0, 0, 1] </rosparam>
     <param name="angle_thresh" value="0.1" />
     <param name="table_height" value="0.5" />
-    <param name="table_thresh" value="0.05" />
+    <param name="table_thresh" value="0.07" />
 
     <!-- Grasp image creation -->
     <param name="create_image_batches" value="false" /> <!-- creates grasp images in batches (less memory usage) -->
