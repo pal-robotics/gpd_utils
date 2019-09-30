@@ -2,8 +2,8 @@
 Changelog for package gpd_utils
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.5 (2019-09-30)
+------------------
 * Add missing install library
 * Merge branch 'license-refactor' into 'master'
   Update pal license
