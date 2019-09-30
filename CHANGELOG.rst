@@ -2,8 +2,8 @@
 Changelog for package gpd_utils
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.6 (2019-09-30)
+------------------
 * Add ARCHIVE directive for static library installation
 * Contributors: Victor Lopez
 
